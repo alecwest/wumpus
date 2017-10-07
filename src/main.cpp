@@ -11,14 +11,13 @@
 int main() {
 	GameWorld gw = GameWorld("test.txt");
 	PlayerAgent a = PlayerAgent(gw);
-	std::cout << "Main1" << std::endl;
 //	std::cout << "Before init playerAgent" << std::endl;
 //	PlayerAgent a = PlayerAgent();
 //	std::cout << "After init playerAgent" << std::endl;
-//	gw.printWorld();
-	std::cout << "Heyyyy\n";
-//	a.printWorld();
+	gw.printWorld();
+	a.printWorld();
 //	a.makeMove();
+	std::cout << "Heyyyy\n";
 	return 0;
 }
 

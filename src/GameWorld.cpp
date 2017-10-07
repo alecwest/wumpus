@@ -3,12 +3,14 @@
 
 #include "GameWorld.hpp"
 
-GameWorld::GameWorld() {
-// TODO World should generate a blank world
-// TODO GameWorld should place random content into that blank world
+GameWorld::GameWorld() : World() {
+	// Init values
+	numGold = 0;
+	numSupmuw = 0;
+	numWumpus = 0;
 }
 
-GameWorld::GameWorld(std::string fileName) {
+GameWorld::GameWorld(std::string fileName) : World() {
 	int locX;
 	int locY;
 	std::ifstream file;
@@ -23,13 +25,11 @@ GameWorld::GameWorld(std::string fileName) {
 	numSupmuw = 0;
 	numWumpus = 0;
 
-	// Get worldSize
+	// Get gridSize
 	getline(file, line);
-	worldSize = atoi(line.c_str());
-	numRooms = worldSize * worldSize;
-	world = new GameRoom[numRooms];
-	for (int i = 0; i < numRooms; i++) {
-		world[i] = GameRoom(i, worldSize);
+	gridSize = atoi(line.c_str());
+	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
+		world.push_back(GameRoom(i, gridSize));
 	}
 
 	// TODO needs to check for proper format (Content\nX-coord\nY-coord)
@@ -44,18 +44,18 @@ GameWorld::GameWorld(std::string fileName) {
 			continue; // Skip any that try to place something in the first square
 		}
 		else if (content.find("Pit") != std::string::npos) {
-			addToRoom(locX * worldSize + locY, RoomContent::PIT);
+			addToRoom(locX * gridSize + locY, RoomContent::PIT);
 		}
 		else if (content.find("Wumpus") != std::string::npos) {
-			addToRoom(locX * worldSize + locY, RoomContent::WUMPUS);
+			addToRoom(locX * gridSize + locY, RoomContent::WUMPUS);
 			numWumpus++;
 		}
 		else if (content.find("Gold") != std::string::npos) {
-			addToRoom(locX * worldSize + locY, RoomContent::GOLD);
+			addToRoom(locX * gridSize + locY, RoomContent::GOLD);
 			numGold++;
 		}
 		else if (content.find("Supmuw") != std::string::npos) {
-			addToRoom(locX * worldSize + locY, RoomContent::SUPMUW);
+			addToRoom(locX * gridSize + locY, RoomContent::SUPMUW);
 			numSupmuw++;
 		}
 	}
@@ -63,16 +63,13 @@ GameWorld::GameWorld(std::string fileName) {
 	file.close();
 }
 
-GameWorld::~GameWorld() {
-	// TODO make sure ~World does this
-	delete [] world;
-}
+GameWorld::~GameWorld() {}
 
 void GameWorld::addToRoom(int room, RoomContent rc) {
 
 	switch(rc) {
 	case RoomContent::GOLD:
-		world[room].addRoomContent(RoomContent::GLITTER);
+		world.at(room).addRoomContent(RoomContent::GLITTER);
 		break;
 	case RoomContent::PIT:
 		addToAdjacentRooms(room, RoomContent::BREEZE);
@@ -87,7 +84,7 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 	default:
 		break;
 	}
-	world[room].addRoomContent(rc);
+	world.at(room).addRoomContent(rc);
 }
 
 void GameWorld::addToAdjacentRooms(int room, RoomContent rc) {

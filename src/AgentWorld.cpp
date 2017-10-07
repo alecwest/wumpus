@@ -24,6 +24,6 @@ void AgentWorld::perceptWorld(int room) {
 	std::vector<RoomContent> content = currentRoom.getRoomContent();
 
 	for (RoomContent c : content){
-		world[room].addRoomContent(c);
+		world.at(room).addRoomContent(c);
 	}
 }

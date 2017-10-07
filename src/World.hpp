@@ -13,9 +13,8 @@
 class World
 {
 protected:
-	int worldSize;
-	int numRooms;
-	Room *world;
+	int gridSize;
+	std::vector<Room> world;
 	void printDividingLine();
 
 public:

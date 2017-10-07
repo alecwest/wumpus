@@ -13,15 +13,11 @@ Agent::Agent() {
 }
 
 Agent::Agent(const GameWorld &gw) {
-	std::cout << "1" << std::endl;
 	world = AgentWorld(gw);
-	std::cout << "2" << std::endl;
 	dir = Direction::EAST;
 	room = 0;
 	maxArrows = 1;
-	std::cout << "3" << std::endl;
 	world.addRoomContent(room, getAgentRoomContent());
-	std::cout << "4" << std::endl;
 }
 
 Agent::~Agent() {}
