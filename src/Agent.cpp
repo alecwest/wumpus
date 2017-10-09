@@ -10,6 +10,7 @@ Agent::Agent() {
 	room = 0;
 	maxArrows = 1;
 	world.addRoomContent(room, getAgentRoomContent());
+	world.perceptWorld(room);
 }
 
 Agent::Agent(const GameWorld &gw) {
@@ -18,6 +19,7 @@ Agent::Agent(const GameWorld &gw) {
 	room = 0;
 	maxArrows = 1;
 	world.addRoomContent(room, getAgentRoomContent());
+	world.perceptWorld(room);
 }
 
 Agent::~Agent() {}
@@ -36,6 +38,7 @@ void Agent::printWorld() {
 }
 
 void Agent::turnLeft() {
+	world.removeRoomContent(room, getAgentRoomContent());
 	switch(dir) {
 	case Direction::NORTH:
 		dir = Direction::WEST;
@@ -52,9 +55,11 @@ void Agent::turnLeft() {
 	default:
 		dir = Direction::EAST;
 	}
+	world.addRoomContent(room, getAgentRoomContent());
 }
 
 void Agent::turnRight() {
+	world.removeRoomContent(room, getAgentRoomContent());
 	switch(dir) {
 	case Direction::NORTH:
 		dir = Direction::EAST;
@@ -71,12 +76,19 @@ void Agent::turnRight() {
 	default:
 		dir = Direction::EAST;
 	}
+	world.addRoomContent(room, getAgentRoomContent());
 }
 
 void Agent::forward() {
+	int nextRoom = world.adjacentRoom(room, dir);
+	if (nextRoom < 0) {
+		return;
+	}
 	RoomContent agentDirection = getAgentRoomContent();
 	world.removeRoomContent(room, agentDirection);
-	world.addRoomContent(world.adjacentRoom(room, dir), agentDirection);
+	world.addRoomContent(nextRoom, agentDirection);
+	room = nextRoom;
+	world.perceptWorld(room);
 }
 
 void Agent::grab() {

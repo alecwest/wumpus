@@ -17,12 +17,12 @@ protected:
 	int maxArrows;
 	std::vector<int> noWumpusRooms;
 	std::vector<int> noSupmuwRooms;
+public:
 	void turnLeft();
 	void turnRight();
 	void forward();
 	void grab();
 	RoomContent shoot();
-public:
 	Agent();
 	Agent(const GameWorld &gw);
 	virtual ~Agent();

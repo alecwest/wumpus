@@ -10,18 +10,21 @@ PlayerAgent::PlayerAgent(const GameWorld &gw) : Agent(gw) {}
 PlayerAgent::~PlayerAgent() {}
 
 void PlayerAgent::makeMove() {
-	char *move = NULL;
-	while (strcmp(move, "q") != 0) {
-		printWorld();
-		std::cout << "Where to next?";
-		std::cin >> move;
-		if (strcmp(move, "r") == 0)
+	std::string move;
+	printWorld();
+	while (move != "q") {
+		std::cout << "Where to next? ";
+		std::getline(std::cin, move);
+		if (move == "r")
 			turnRight();
-		else if (strcmp(move, "l") == 0)
+		else if (move == "l")
 			turnLeft();
-		else if (strcmp(move, "f") == 0)
+		else if (move == "f")
 			forward();
-		else if (strcmp(move, "s") == 0)
+		else if (move == "s")
 			shoot();
+		else if (move == "g")
+			grab();
+		printWorld();
 	}
 }

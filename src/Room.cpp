@@ -57,7 +57,7 @@ void Room::addRoomContent(RoomContent rc) {
 
 bool Room::removeRoomContent(RoomContent rc) {
 	std::ptrdiff_t pos = distance(content.begin(), std::find(content.begin(), content.end(), rc));
-	if (pos >= content.size()) {
+	if (pos >= (unsigned int) content.size()) {
 		return false;
 	}
 	content.erase(content.begin() + pos);
