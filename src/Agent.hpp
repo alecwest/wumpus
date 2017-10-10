@@ -9,6 +9,8 @@
 
 class Agent
 {
+private:
+	void processPerception(std::vector<RoomContent> rc);
 protected:
 	AgentWorld world;
 	Direction dir;
@@ -17,17 +19,20 @@ protected:
 	int maxArrows;
 	std::vector<int> noWumpusRooms;
 	std::vector<int> noSupmuwRooms;
-public:
+	// TODO does turnLeft and turnRight count as a move?
 	void turnLeft();
 	void turnRight();
 	void forward();
 	void grab();
+	void exit();
 	RoomContent shoot();
+public:
 	Agent();
 	Agent(const GameWorld &gw);
 	virtual ~Agent();
 	int calculateScore();
 	void printWorld();
+	void gameOver();
 	virtual void makeMove() = 0;
 private:
 	RoomContent getAgentRoomContent();

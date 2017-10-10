@@ -8,7 +8,7 @@ GameWorld::GameWorld() : World() {
 	numGold = 0;
 	numSupmuw = 0;
 	numWumpus = 0;
-	std::cout << "Testing:: Why am I in default GameWorld constructor???\n";
+//	std::cout << "Testing:: Why am I in default GameWorld constructor???\n";
 }
 
 GameWorld::GameWorld(std::string fileName) : World() {
@@ -32,8 +32,6 @@ GameWorld::GameWorld(std::string fileName) : World() {
 	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(GameRoom(i, gridSize));
 	}
-	std::cout << "Testing:: just loaded rooms into world\n";
-	std::cout << "Testing:: world has " << world.size() << " rooms\n";
 
 	// TODO needs to check for proper format (Content\nX-coord\nY-coord)
 	while (getline(file, line)) {
@@ -47,23 +45,20 @@ GameWorld::GameWorld(std::string fileName) : World() {
 			continue; // Skip any that try to place something in the first square
 		}
 		else if (content.find("Pit") != std::string::npos) {
-			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
+//			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::PIT);
 		}
 		else if (content.find("Wumpus") != std::string::npos) {
-			std::cout << "Testing:: adding wumpus to (" << locX << ", " << locY << ")\n";
+//			std::cout << "Testing:: adding wumpus to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::WUMPUS);
-			numWumpus++;
 		}
 		else if (content.find("Gold") != std::string::npos) {
-			std::cout << "Testing:: adding gold to (" << locX << ", " << locY << ")\n";
+//			std::cout << "Testing:: adding gold to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::GOLD);
-			numGold++;
 		}
 		else if (content.find("Supmuw") != std::string::npos) {
-			std::cout << "Testing:: adding supmuw to (" << locX << ", " << locY << ")\n";
+//			std::cout << "Testing:: adding supmuw to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::SUPMUW);
-			numSupmuw++;
 		}
 	}
 
@@ -73,25 +68,59 @@ GameWorld::GameWorld(std::string fileName) : World() {
 GameWorld::~GameWorld() {}
 
 void GameWorld::addToRoom(int room, RoomContent rc) {
-	// TODO add a check to make sure we aren't adding to rooms outside of the worldSize
+	if (room < 0 || room > world.size()) {
+		return; // Ignore attempts to place content outside of boundaries
+	}
+	std::vector<int> adjRooms = adjacentRooms(room);
+	std::vector<int> diagRooms = adjacentDiagonalRooms(room);
+	std::vector<int> allRooms;
+	allRooms.reserve( adjRooms.size() + diagRooms.size() ); // preallocate memory
+	allRooms.insert( allRooms.end(), adjRooms.begin(), adjRooms.end() );
+	allRooms.insert( allRooms.end(), diagRooms.begin(), diagRooms.end() );
 	switch(rc) {
 	case RoomContent::GOLD:
-		world.at(room).addRoomContent(RoomContent::GLITTER);
+		addRoomContent(room, RoomContent::GLITTER);
+		numGold++;
 		break;
 	case RoomContent::PIT:
+		if (roomHasContent(room, RoomContent::SUPMUW)) {
+			removeRoomContent(room, RoomContent::FOOD);
+		}
 		addToAdjacentRooms(room, RoomContent::BREEZE);
 		break;
 	case RoomContent::SUPMUW:
+		// If WUMPUS is nearby, change rc to SUPMUW_EVIL
+		for (auto r : allRooms) {
+			if (roomHasContent(r, RoomContent::WUMPUS)) {
+				rc = RoomContent::SUPMUW_EVIL;
+				break;
+			}
+		}
+		// If SUPMUW is not evil and there is no pit in this space, it will share FOOD
+		if (rc != RoomContent::SUPMUW_EVIL && !roomHasContent(room, RoomContent::PIT)) {
+			addRoomContent(room, RoomContent::FOOD);
+		}
 		addToAdjacentRooms(room, RoomContent::MOO);
 		addToAdjacentDiagonalRooms(room, RoomContent::MOO);
+		numSupmuw++;
 		break;
 	case RoomContent::WUMPUS:
+		// If SUPMUW is nearby, turn it evil and remove any food it may have been offering
+		for (auto r : allRooms) {
+			if (roomHasContent(r, RoomContent::SUPMUW)) {
+				removeRoomContent(r, RoomContent::SUPMUW);
+				// Should not be an issue if food isn't there (i.e. SUPMUW was in a pit)
+				removeRoomContent(r, RoomContent::FOOD);
+				addRoomContent(r, RoomContent::SUPMUW_EVIL);
+			}
+		}
+
 		addToAdjacentRooms(room, RoomContent::STENCH);
+		numWumpus++;
 		break;
 	default:
 		break;
 	}
-	std::cout << "Adding to room " << room << " in a world with " << world.size() << " rooms.\n";
 	world.at(room).addRoomContent(rc);
 }
 
@@ -115,7 +144,6 @@ int GameWorld::adjacentRoom(int room, Direction dir) {
 
 std::vector<int> GameWorld::adjacentRooms(int room) {
 	std::vector<int> rooms = std::vector<int>();
-	std::cout << "Trying to get adjacent rooms to " << room << " in a world with " << world.size() << " rooms.\n";
 	int northRoom = world.at(room).adjacentRoom(Direction::NORTH);
 	int eastRoom = 	world.at(room).adjacentRoom(Direction::EAST);
 	int southRoom = world.at(room).adjacentRoom(Direction::SOUTH);
@@ -184,7 +212,6 @@ bool GameWorld::removeRoomContent(int room, RoomContent rc) {
 }
 
 void GameWorld::printWorld() {
-	// TODO is this the best way to prevent printing?
 	if (world.size() < 0 || gridSize < 0){
 		std::cout << "Could not print this world!";
 		return;

@@ -3,9 +3,6 @@ Wumpus
 3
 8
 Pit
-1
-4
-Pit
 5
 9
 Pit

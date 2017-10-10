@@ -24,13 +24,18 @@ AgentWorld::~AgentWorld() {
 AgentWorld* AgentWorld::clone() {
 }
 
-void AgentWorld::perceptWorld(int room) {
+std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	Room currentRoom = gameWorld.getRoom(room);
 	std::vector<RoomContent> content = currentRoom.getRoomContent();
 	for (RoomContent c : content){
 		world.at(room).addRoomContent(c);
 	}
+	// Add a BUMP to the list if it exists in the agentWorld
+	if (roomHasContent(room, RoomContent::BUMP)) {
+		content.push_back(RoomContent::BUMP);
+	}
 	world.at(room).setRoomStatus(RoomStatus::VISITED);
+	return content;
 }
 
 int AgentWorld::adjacentRoom(int room, Direction dir) {
@@ -39,7 +44,7 @@ int AgentWorld::adjacentRoom(int room, Direction dir) {
 
 std::vector<int> AgentWorld::adjacentRooms(int room) {
 	std::vector<int> rooms = std::vector<int>();
-	std::cout << "Trying to get adjacent rooms to " << room << " in a world with " << world.size() << " rooms.\n";
+//	std::cout << "Testing:: Trying to get adjacent rooms to " << room << " in a world with " << world.size() << " rooms.\n";
 	int northRoom = world.at(room).adjacentRoom(Direction::NORTH);
 	int eastRoom = 	world.at(room).adjacentRoom(Direction::EAST);
 	int southRoom = world.at(room).adjacentRoom(Direction::SOUTH);
@@ -95,6 +100,10 @@ Room AgentWorld::getRoom(int room) {
 	}
 }
 
+RoomStatus AgentWorld::getRoomStatus(int room) {
+	return world.at(room).getRoomStatus();
+}
+
 bool AgentWorld::roomHasContent(int room, RoomContent rc) {
 	return getRoom(room).hasContent(rc);
 }
@@ -108,50 +117,73 @@ bool AgentWorld::removeRoomContent(int room, RoomContent rc) {
 }
 
 void AgentWorld::printWorld() {
-	// TODO is this the best way to prevent printing?
 	if (world.size() < 0 || gridSize < 0){
 		std::cout << "Could not print this world!";
 		return;
 	}
-
+	RoomStatus rs;
 	printDividingLine();
 	for (int i = world.size() - gridSize; i >= 0; i -= gridSize) {
 		// First line prints physical objects
 		for (int j = 0; j < gridSize; j++) {
 			std::cout << "|" <<
-						 (world.at(i + j).hasContent(RoomContent::GOLD) ? "G " : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::PIT) ? "P " : "  ") <<
-					     (world.at(i + j).hasContent(RoomContent::WUMPUS) ? "W " : "  ") <<
-					     (world.at(i + j).hasContent(RoomContent::SUPMUW) ? "S " : "  ");
+						 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
+						 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
+					     (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
+			if(roomHasContent(i + j, RoomContent::SUPMUW)) {
+				std::cout << "S" <<
+							 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
+				// Food should only exist in room if SUPMUW does
+			}
+			else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
+				std::cout << "E ";
+			}
+			else {
+				std::cout << "  ";
+			}
 		}
 		std::cout << "|" << std::endl;
 		// Second line prints sensations
 		for (int j = 0; j < gridSize; j++) {
 			std::cout << "|" <<
-						 (world.at(i + j).hasContent(RoomContent::BREEZE) ? " B" : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::GLITTER) ? " G" : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::MOO) ? " M" : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::STENCH) ? " S" : "  ");
+						 (roomHasContent(i + j, RoomContent::BREEZE) ? " B" : "  ") <<
+						 (roomHasContent(i + j, RoomContent::GLITTER) ? " G" : "  ") <<
+						 (roomHasContent(i + j, RoomContent::MOO) ? " M" : "  ") <<
+						 (roomHasContent(i + j, RoomContent::STENCH) ? " S" : "  ");
 		}
 		std::cout << "|" << std::endl;
-		// Third line prints the agent
+		// Third line prints the agent and the room status
 		for (int j = 0; j < gridSize; j++) {
+			rs = getRoomStatus(i + j);
 			std::cout << "|";
 			if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
-				std::cout << "   ^^   ";
+				std::cout << "   ^^  ";
 			}
 			else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
-				std::cout << "   >>   ";
+				std::cout << "   >>  ";
 			}
 			else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
-				std::cout << "   vv   ";
+				std::cout << "   vv  ";
 			}
 			else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
-				std::cout << "   <<   ";
+				std::cout << "   <<  ";
+			}
+			else if (world.at(i + j).hasContent(RoomContent::AGENT_DEAD)) {
+				std::cout << "  RIP  ";
 			}
 			else {
-				std::cout << "        ";
+				std::cout << "       ";
 			}
+			if (rs == RoomStatus::VISITED) {
+				std::cout << "*";
+			}
+			else if (rs == RoomStatus::FRINGE) {
+				std::cout << "?";
+			}
+			else {
+				std::cout << " ";
+			}
+
 		}
 		std::cout << "|" << std::endl;
 
