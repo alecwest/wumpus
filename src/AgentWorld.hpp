@@ -26,7 +26,7 @@ public:
 	// If supmuw is in a pit, then no food will be left out and the pit is harmless
 	// If wumpus is in a pit, it is still harmful, and if supmuw smells wumpus while in pit, it becomes harmful as well
 	// If supmuw has food, all 8 adjacent rooms are wumpus-free
-	std::vector<RoomContent> perceptWorld(int room);
+	std::vector<RoomContent> perceptWorld(int room); // Returns implementation of [none, none, none, none, ...] as described in class powerpoints
 	int adjacentRoom(int room, Direction dir);
 	std::vector<int> adjacentRooms(int room);
 	std::vector<int> adjacentDiagonalRooms(int room);
