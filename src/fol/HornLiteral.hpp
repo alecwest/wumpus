@@ -17,7 +17,7 @@
 class HornLiteral {
 private:
 	// The name of the current literal
-	std::string name;
+	LiteralSymbol name;
 	// The negation of the clause
 	bool negation;
 	// Can be either a Variable or a Constant or a Function
@@ -25,11 +25,11 @@ private:
 
 public:
 	HornLiteral();
-	HornLiteral(std::string name, bool negation, Term *term1);
-	HornLiteral(std::string name, bool negation, Term *term1, Term *term2);
+	HornLiteral(LiteralSymbol name, bool negation, Term *term1);
+	HornLiteral(LiteralSymbol name, bool negation, Term *term1, Term *term2);
 	virtual ~HornLiteral();
-	void setName(std::string name);
-	std::string getName();
+	void setName(LiteralSymbol name);
+	LiteralSymbol getName();
 	void setNegation(bool negation);
 	bool getNegation();
 	void addTerm(Term *term);

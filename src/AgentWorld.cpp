@@ -108,6 +108,10 @@ bool AgentWorld::roomHasContent(int room, RoomContent rc) {
 	return getRoom(room).hasContent(rc);
 }
 
+bool AgentWorld::roomIsEmpty(int room) {
+	return getRoom(room).roomEmpty();
+}
+
 void AgentWorld::addRoomContent(int room, RoomContent rc) {
 	world.at(room).addRoomContent(rc);
 }

@@ -33,6 +33,7 @@ public:
 	Room getRoom(int room);
 	RoomStatus getRoomStatus(int room);
 	bool roomHasContent(int room, RoomContent rc);
+	bool roomIsEmpty(int room);
 	void addRoomContent(int room, RoomContent rc);
 	bool removeRoomContent(int room, RoomContent rc);
 	void printWorld();

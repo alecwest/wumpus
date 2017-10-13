@@ -30,6 +30,16 @@ static bool compareVectors(std::vector<T> a, std::vector<T> b)
    return (a == b);
 }
 
+enum class Answer { TRUE, FALSE, UNKNOWN };
+inline std::string toString(Answer a) {
+	switch (a) {
+	case Answer::TRUE: return "True";
+	case Answer::FALSE: return "False";
+	case Answer::UNKNOWN: return "Unknown";
+	default: return "";
+	}
+}
+
 enum class FunctionSymbol { ADD, SUB };
 inline std::string toString(FunctionSymbol fs) {
 	switch(fs) {

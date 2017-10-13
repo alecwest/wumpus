@@ -8,18 +8,18 @@
 #include "HornLiteral.hpp"
 
 HornLiteral::HornLiteral() {
-	name = "";
+	name = LiteralSymbol::OK;
 	negation = true;
 	terms = std::vector<Term *>();
 }
 
-HornLiteral::HornLiteral(std::string name, bool negation, Term* term1) {
+HornLiteral::HornLiteral(LiteralSymbol name, bool negation, Term* term1) {
 	this->name = name;
 	this->negation = negation;
 	terms.push_back(term1);
 }
 
-HornLiteral::HornLiteral(std::string name, bool negation, Term* term1,
+HornLiteral::HornLiteral(LiteralSymbol name, bool negation, Term* term1,
 		Term* term2) {
 	this->name = name;
 	this->negation = negation;
@@ -27,13 +27,17 @@ HornLiteral::HornLiteral(std::string name, bool negation, Term* term1,
 	terms.push_back(term2);
 }
 
-HornLiteral::~HornLiteral() {}
+HornLiteral::~HornLiteral() {
+	for (auto t : terms) {
+		delete t;
+	}
+}
 
-void HornLiteral::setName(std::string name) {
+void HornLiteral::setName(LiteralSymbol name) {
 	this->name = name;
 }
 
-std::string HornLiteral::getName() {
+LiteralSymbol HornLiteral::getName() {
 	return name;
 }
 
@@ -73,7 +77,7 @@ std::string HornLiteral::toString() {
 			args += ",";
 		args += t->toString();
 	}
-	return neg + name + " (" + args + ")";
+	return neg + ::toString(name) + " (" + args + ")";
 }
 
 bool HornLiteral::operator ==(HornLiteral hl) {
