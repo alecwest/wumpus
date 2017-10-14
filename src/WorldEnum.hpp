@@ -49,6 +49,36 @@ enum class Inference { CONTAINS_PIT, CONTAINS_SUPMUW, CONTAINS_SUPMUW_EVIL, CONT
 enum class RoomStatus { FRINGE, UNKNOWN, VISITED };
 
 enum class Move { LEFT, RIGHT, FORWARD, SHOOT, GRAB, EXIT };
+inline Move bestDirectionToTurn(Direction currDir, Direction targetDir) {
+	if (currDir == Direction::NORTH) {
+		switch (targetDir) {
+		case Direction::EAST: return Move::RIGHT;
+		case Direction::WEST: return Move::LEFT;
+		default: return Move::RIGHT;
+		}
+	}
+	else if (currDir == Direction::EAST) {
+		switch (targetDir) {
+		case Direction::SOUTH: return Move::RIGHT;
+		case Direction::NORTH: return Move::LEFT;
+		default: return Move::RIGHT;
+		}
+	}
+	else if (currDir == Direction::SOUTH) {
+		switch (targetDir) {
+		case Direction::WEST: return Move::RIGHT;
+		case Direction::EAST: return Move::LEFT;
+		default: return Move::RIGHT;
+		}
+	}
+	else { // currDir == Direction::WEST
+		switch (targetDir) {
+		case Direction::NORTH: return Move::RIGHT;
+		case Direction::SOUTH: return Move::LEFT;
+		default: return Move::RIGHT;
+		}
+	}
+}
 
 struct ExplorationStats {
 	bool alive = true;
@@ -57,8 +87,8 @@ struct ExplorationStats {
 	int foodShared = 0;
 	int goldFound = 0;
 	int movesTaken = 0;
-	int supmuwKilled = 0;
-	int wumpusKilled = 0;
+	bool supmuwKilled = false; // TODO assuming one supmuw and wumpus
+	bool wumpusKilled = false;
 	int safeRoom = 0;
 };
 

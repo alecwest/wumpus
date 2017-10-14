@@ -137,9 +137,9 @@ bool AgentWorld::hasInference(int room, Inference i) {
 	return world.at(room).hasInference(i);
 }
 
-bool AgentWorld::safeRoom(int room) {
+bool AgentWorld::safeUnvisitedRoom(int room) {
 	if (room < 0 || room > getNumRooms()) return false;
-	return world.at(room).safeRoom();
+	return world.at(room).safeUnvisitedRoom();
 }
 
 void AgentWorld::setRoomStatus(int room, RoomStatus rs) {

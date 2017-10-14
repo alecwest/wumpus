@@ -34,7 +34,7 @@ public:
 	void addInference(int room, Inference i);
 	void removeInference(int room, Inference i);
 	bool hasInference(int room, Inference i);
-	bool safeRoom(int room);
+	bool safeUnvisitedRoom(int room);
 	Room getRoom(int room);
 	int getNumRooms();
 	void setRoomStatus(int room, RoomStatus rs);

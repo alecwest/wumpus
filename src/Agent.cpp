@@ -120,6 +120,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	else if (message.length() == 0){
 		message = "This room seems clear...\n";
 	}
+	if (!info.alive) info.gameOver = true;
 	std::cout << message;
 }
 
@@ -142,6 +143,7 @@ void Agent::turnLeft() {
 		dir = Direction::EAST;
 	}
 	world.addRoomContent(room, getAgentRoomContent());
+	info.movesTaken++;
 }
 
 void Agent::turnRight() {
@@ -163,6 +165,7 @@ void Agent::turnRight() {
 		dir = Direction::EAST;
 	}
 	world.addRoomContent(room, getAgentRoomContent());
+	info.movesTaken++;
 }
 
 void Agent::forward() {

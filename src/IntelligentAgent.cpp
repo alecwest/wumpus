@@ -7,13 +7,22 @@
 void IntelligentAgent::turn(Direction d) {
 	Direction agentDir = dir;
 	while(agentDir != d) {
-		moves.push(Move::RIGHT); // TODO can be improved to turn left when goal direction is one to the left
-		agentDir = right(agentDir);
+		Move bestMove = bestDirectionToTurn(dir, d);
+		moves.push(bestMove);
+		agentDir = (bestMove == Move::RIGHT ? right(agentDir) : left(agentDir));
+	}
+}
+
+void IntelligentAgent::goBack(int n) {
+	moves.push(Move::RIGHT);
+	moves.push(Move::RIGHT);
+	for (int i = 0; i < n; i++) {
+		moves.push(Move::FORWARD);
 	}
 }
 
 void IntelligentAgent::processMoves() {
-	while (!moves.empty()) {
+	while (!moves.empty() && !info.gameOver) {
 		Move move = moves.front();
 		moves.pop();
 		switch(move) {
@@ -75,7 +84,7 @@ void IntelligentAgent::inferRooms() {
 			markRoom(r, Inference::CONTAINS_PIT);
 		}
 	}
-	if (world.roomHasContent(room, RoomContent::BUMP)) {
+	if (world.roomHasContent(room, RoomContent::BUMP)) { // TODO assuming agent knows the grid is a square, but not the size of it until it hits the edge
 		int r = room;
 		markRoom(r, Inference::EDGE);
 		if (dir == Direction::NORTH || dir == Direction::SOUTH) {
@@ -133,33 +142,110 @@ void IntelligentAgent::faceRoom(int r) {
 	}
 }
 
+void IntelligentAgent::goToRoom(int r) {
+	for (auto d : directionVector()) {
+		if (world.adjacentRoom(room, d) == r) {
+			turn(d);
+			moves.push(Move::FORWARD);
+			return;
+		}
+	}
+}
+
+void IntelligentAgent::pathToFringe() {
+	std::queue<Move> movesToAdd;
+	movesToAdd = recursiveBestFirstSearch(room, dir, movesToAdd);
+	moves = movesToAdd;
+	/*
+	 * If current node is Fringe, return movesToAdd
+	 * init vector of successors <int>
+	 * For each adjacent node (n),
+	 * add n to successors vector
+	 * if successors is empty, return NULL
+	 * push the appropriate direction to move to get to that node as well as the movesToAdd vector
+	 * Add these new directions, and then get the children
+	 */
+	std::cout << "Here's the added moves:\n";
+	while (!movesToAdd.empty()) {
+		Move m = moves.front();
+		switch(m) {
+		case Move::LEFT:
+			std::cout << "Move left\n"; break;
+		case Move::RIGHT:
+			std::cout << "Move right\n"; break;
+		case Move::FORWARD:
+			std::cout << "Move forward\n"; break;
+		default: break;
+		}
+		movesToAdd.pop();
+	}
+}
+
+// TODO rename method
+std::queue<Move> IntelligentAgent::recursiveBestFirstSearch(
+				int currRoom, Direction currDir,
+				std::queue<Move> pathMoves) {
+
+	if (world.safeUnvisitedRoom(currRoom)) {
+		std::cout << "Room " << currRoom << " is safe and unvisited\n";
+		return pathMoves;
+	}
+	std::vector<int> successors = world.adjacentRooms(currRoom);
+	if (successors.empty()) return std::queue<Move>();
+	for (auto s : successors) {
+		for (auto d : directionVector()) {
+			if (world.adjacentRoom(currRoom, d) == s) {
+				Direction agentDir = currDir;
+				std::queue<Move> pathMovesAndNew = pathMoves;
+				while(agentDir != d) {
+					pathMovesAndNew.push(bestDirectionToTurn(dir, d));
+					agentDir = right(agentDir);
+				}
+				pathMovesAndNew.push(Move::FORWARD);
+
+				return recursiveBestFirstSearch(s, agentDir, pathMovesAndNew);
+			}
+		}
+	}
+	std::cout << "Reached the end. This shouldn't happen???\n";
+	return pathMoves;
+}
+
 // TODO when bump is encountered, knowledge about an edge should be added
 // TODO can assume only one wumpus, supmuw
 // TODO wumpus can't be in a pit
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
+	int numAdjVisited;
 	printWorld();
 	while (!info.gameOver) {
+		numAdjVisited = 0;
 		adjRooms = world.adjacentRooms(room);
 		inferRooms();
+		// Find a not yet visited room that is safe
 		for (auto r : adjRooms) {
-			std::cout << "Checking adjacent room " << r << std::endl;
-			if (r < 0 || r > world.getNumRooms()) continue;
 			// Find room that is known to be safe, and move there
-			if(world.safeRoom(r)) {
-				std::cout << "Room " << r << " is safe\n";
+			if(world.safeUnvisitedRoom(r)) {
 				faceRoom(r);
 				moves.push(Move::FORWARD);
 				break;
 			}
+			if (world.getRoomStatus(r) == RoomStatus::VISITED) numAdjVisited++;
+			// If all adjacent rooms are visited or unsafe, don't double back.
+			if (numAdjVisited == (int)adjRooms.size()) {
+				std::cout << "All surrounding options are visited\n";
+				// Find the closest Fringe (that you can safely reach) and take that path
+				pathToFringe();
+				std::cout << "Moves has " << moves.size() << " moves in it\n";
+			}
 		}
-//		else {
-//			if (world.roomHasContent(room, RoomContent::BREEZE)) {
-
-//			}
-//		}
+		// If no move was determined, double back to the previous room
+		if (moves.size() == 0) {
+			goBack(1);
+		}
 
 		processMoves();
 		getchar();
 	}
+	gameOver();
 }

@@ -51,7 +51,7 @@ bool AgentRoom::hasInference(Inference i) {
 	return std::find(inferences.begin(), inferences.end(), i) != inferences.end();
 }
 
-bool AgentRoom::safeRoom() {
+bool AgentRoom::safeUnvisitedRoom() {
 	// TODO should a room that contains the supmuw be considered safe?
 	return (status != RoomStatus::VISITED
 		 && !hasInference(Inference::CONTAINS_PIT)

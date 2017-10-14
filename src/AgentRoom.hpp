@@ -30,7 +30,7 @@ public:
 	/*
 	 * Returns true if room is pit free, wumpus free, and evil supmuw free and NOT yet visited
 	 */
-	bool safeRoom();
+	bool safeUnvisitedRoom();
 	/*
 	 * Returns true if room is visited
 	 */
