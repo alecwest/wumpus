@@ -14,7 +14,6 @@ class IntelligentAgent : public Agent
 private:
 //	KnowledgeBase kb;
 	std::queue<Move> moves;
-	std::vector<Direction> directions;
 	// Pushes the appropriate number of turns onto the moves queue
 	void turn(Direction d);
 	// Iterates through accumulated moves and executes each one

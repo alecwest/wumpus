@@ -29,13 +29,11 @@ void IntelligentAgent::processMoves() {
 
 IntelligentAgent::IntelligentAgent() : Agent() {
 	moves = std::queue<Move>();
-	directions = {Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST };
 //	kb = KnowledgeBase(world.getGridSize());
 }
 
 IntelligentAgent::IntelligentAgent(const GameWorld &gw) : Agent(gw) {
 	moves = std::queue<Move>();
-	directions = {Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST};
 //	kb = KnowledgeBase(world.getGridSize());
 }
 
@@ -59,19 +57,21 @@ void IntelligentAgent::makeMove() {
 	printWorld();
 	while (!info.gameOver) {
 		if (world.roomIsEmpty(room)) {
-			// Find adjacent room that has not yet been visited, with a preference for moving North
-			for (Direction d : directions) {
-				int r = world.adjacentRoom(room, d);
-				if (r < 0 || r > world.getGridSize() || r == room) continue;
+			std::vector<int> adjRooms = world.adjacentRooms(room);
+			for (int r : adjRooms) {
+				if (r < 0 || r > world.getGridSize()) continue;
 				// Mark this room as completely safe. Orthogonal adjacency to a empty space guarantees safety
-				std::cout << "Marking room " << r << " as safe\n";
-				std::cout << "Current room is " << (world.getRoomStatus(room) == RoomStatus::VISITED ? "Visited\n": "Fringe\n");
+				std::cout << "Testing:: marking room " << r << " as safe\n";
 				markSafe(r);
-//				turn(d);
-//				moves.push(Move::FORWARD);
-				break;
 			}
 		}
+		else if (world.roomHasContent(room, RoomContent::BREEZE)) {
+
+		}
+			// Find adjacent room that has not yet been visited, with a preference for moving North
+//				turn(d);
+//				moves.push(Move::FORWARD);
+//				break;
 //		else {
 //			if (world.roomHasContent(room, RoomContent::BREEZE)) {
 

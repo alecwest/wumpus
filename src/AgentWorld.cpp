@@ -36,7 +36,7 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 		content.push_back(RoomContent::BUMP);
 	}
 	std::cout << "Setting room " << room << " to visited\n";
-	world.at(room).setRoomStatus(RoomStatus::UNKNOWN);
+	world.at(room).setRoomStatus(RoomStatus::VISITED);
 	std::cout << "Current room is " << (getRoomStatus(room) == RoomStatus::VISITED ? "Visited\n": "Fringe\n");
 	return content;
 }
@@ -47,22 +47,9 @@ int AgentWorld::adjacentRoom(int room, Direction dir) {
 
 std::vector<int> AgentWorld::adjacentRooms(int room) {
 	std::vector<int> rooms = std::vector<int>();
-//	std::cout << "Testing:: Trying to get adjacent rooms to " << room << " in a world with " << world.size() << " rooms.\n";
-	int northRoom = world.at(room).adjacentRoom(Direction::NORTH);
-	int eastRoom = 	world.at(room).adjacentRoom(Direction::EAST);
-	int southRoom = world.at(room).adjacentRoom(Direction::SOUTH);
-	int westRoom = world.at(room).adjacentRoom(Direction::WEST);
-	if (northRoom > -1){
-		rooms.push_back(northRoom);
-	}
-	if (eastRoom > -1){
-		rooms.push_back(eastRoom);
-	}
-	if (southRoom > -1){
-		rooms.push_back(southRoom);
-	}
-	if (westRoom > -1){
-		rooms.push_back(westRoom);
+	for (Direction d : directionVector()) {
+		int r = world.at(room).adjacentRoom(d);
+		if (r > -1) rooms.push_back(r);
 	}
 	return rooms;
 }
@@ -104,7 +91,7 @@ Room AgentWorld::getRoom(int room) {
 }
 
 RoomStatus AgentWorld::getRoomStatus(int room) {
-	if (room > 0 && room < (int) world.size())
+	if (room >= 0 && room < (int) world.size())
 		return world.at(room).getRoomStatus();
 	return static_cast<RoomStatus>(NULL);
 }
@@ -130,7 +117,7 @@ std::vector<Inference> AgentWorld::getInferences(int room) {
 }
 
 void AgentWorld::addInference(int room, Inference i) {
-	if (room > 0 && room < (int) world.size())
+	if (room >= 0 && room < (int) world.size())
 		world.at(room).addInference(i);
 }
 

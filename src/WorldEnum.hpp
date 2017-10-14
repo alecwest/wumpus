@@ -8,7 +8,10 @@
 #ifndef SRC_WORLDENUM_HPP_
 #define SRC_WORLDENUM_HPP_
 
+#include <vector>
+
 enum class Direction { NORTH, EAST, SOUTH, WEST };
+inline std::vector<Direction> directionVector() {return {Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST }; }
 
 inline Direction right(Direction d) {
 	switch(d) {
