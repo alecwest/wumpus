@@ -30,18 +30,16 @@ void IntelligentAgent::processMoves() {
 
 IntelligentAgent::IntelligentAgent() : Agent() {
 	moves = std::queue<Move>();
-//	kb = KnowledgeBase(world.getGridSize());
 }
 
 IntelligentAgent::IntelligentAgent(const GameWorld &gw) : Agent(gw) {
 	moves = std::queue<Move>();
-//	kb = KnowledgeBase(world.getGridSize());
 }
 
 IntelligentAgent::~IntelligentAgent() {}
 
 void IntelligentAgent::markSafe(int r) {
-	if (r < 0 || r > world.getGridSize()) return;
+	if (r < 0 || r > world.getNumRooms()) return;
 	// No need to infer about the room if we've already visited it
 	if (world.getRoomStatus(r) != RoomStatus::VISITED) {
 		world.setRoomStatus(r, RoomStatus::FRINGE);
@@ -52,7 +50,7 @@ void IntelligentAgent::markSafe(int r) {
 }
 
 void IntelligentAgent::markRoom(int r, Inference i) {
-	if (r < 0 || r > world.getGridSize()) return;
+	if (r < 0 || r > world.getNumRooms()) return;
 	// No need to infer about the room if we've already visited it
 	if (world.getRoomStatus(r) != RoomStatus::VISITED) {
 		world.setRoomStatus(r, RoomStatus::FRINGE);
@@ -62,18 +60,17 @@ void IntelligentAgent::markRoom(int r, Inference i) {
 
 // TODO can be refactored
 void IntelligentAgent::inferRooms() {
-	std::cout << "Inferring rooms surrounding room " << room << std::endl;
 	std::vector<int> adjRooms = world.adjacentRooms(room);
 	if (world.roomIsEmpty(room)) {
 		for (int r : adjRooms) {
-			if (r < 0 || r > world.getGridSize()) continue;
+			if (r < 0 || r > world.getNumRooms()) continue;
 			// Mark this room as completely safe. Orthogonal adjacency to a empty space guarantees safety
 			markSafe(r);
 		}
 	}
 	if (world.roomHasContent(room, RoomContent::BREEZE)) {
 		for (int r : adjRooms) {
-			if (r < 0 || r > world.getGridSize()) continue;
+			if (r < 0 || r > world.getNumRooms()) continue;
 			// Mark adjacent rooms as possible containers for pit
 			markRoom(r, Inference::CONTAINS_PIT);
 		}
@@ -106,13 +103,13 @@ void IntelligentAgent::inferRooms() {
 	if (world.roomHasContent(room, RoomContent::MOO)) {
 		std::vector<int> diagRooms = world.adjacentDiagonalRooms(room);
 		for (int r : adjRooms) {
-			if (r < 0 || r > world.getGridSize()) continue;
+			if (r < 0 || r > world.getNumRooms()) continue;
 			// Mark adjacent rooms as possible containers for supmuw or supmuw_evil
 			markRoom(r, Inference::CONTAINS_SUPMUW);
 			markRoom(r, Inference::CONTAINS_SUPMUW_EVIL);
 		}
 		for (int r : diagRooms) {
-			if (r < 0 || r > world.getGridSize()) continue;
+			if (r < 0 || r > world.getNumRooms()) continue;
 			// Mark diagonal rooms as possible containers for supmuw or supmuw_evil
 			markRoom(r, Inference::CONTAINS_SUPMUW);
 			markRoom(r, Inference::CONTAINS_SUPMUW_EVIL);
@@ -120,7 +117,7 @@ void IntelligentAgent::inferRooms() {
 	}
 	if (world.roomHasContent(room, RoomContent::STENCH)) {
 		for (int r : adjRooms) {
-			if (r < 0 || r > world.getGridSize()) continue;
+			if (r < 0 || r > world.getNumRooms()) continue;
 			// Mark adjacent rooms as possible containers for wumpus
 			markRoom(r, Inference::CONTAINS_WUMPUS);
 		}
@@ -146,7 +143,8 @@ void IntelligentAgent::makeMove() {
 		adjRooms = world.adjacentRooms(room);
 		inferRooms();
 		for (auto r : adjRooms) {
-			if (r < 0 || r > world.getGridSize()) continue;
+			std::cout << "Checking adjacent room " << r << std::endl;
+			if (r < 0 || r > world.getNumRooms()) continue;
 			// Find room that is known to be safe, and move there
 			if(world.safeRoom(r)) {
 				std::cout << "Room " << r << " is safe\n";
@@ -155,8 +153,6 @@ void IntelligentAgent::makeMove() {
 				break;
 			}
 		}
-//				moves.push(Move::FORWARD);
-//				break;
 //		else {
 //			if (world.roomHasContent(room, RoomContent::BREEZE)) {
 

@@ -22,6 +22,7 @@ public:
 	World();
 	virtual ~World();
 	int getGridSize();
+	int getNumRooms();
 	virtual int adjacentRoom(int room, Direction dir) = 0;
 	virtual std::vector<int> adjacentRooms(int room) = 0;
 	virtual std::vector<int> adjacentDiagonalRooms(int room) = 0; // Primary used for Supmuw's Moo

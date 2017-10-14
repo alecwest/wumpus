@@ -36,6 +36,7 @@ public:
 	bool hasInference(int room, Inference i);
 	bool safeRoom(int room);
 	Room getRoom(int room);
+	int getNumRooms();
 	void setRoomStatus(int room, RoomStatus rs);
 	RoomStatus getRoomStatus(int room);
 	bool roomHasContent(int room, RoomContent rc);

@@ -28,6 +28,7 @@ public:
 	std::vector<int> adjacentRooms(int room);
 	std::vector<int> adjacentDiagonalRooms(int room);
 	Room getRoom(int room);
+	int getNumRooms();
 	bool roomHasContent(int room, RoomContent rc);
 	void addRoomContent(int room, RoomContent rc);
 	bool removeRoomContent(int room, RoomContent rc);

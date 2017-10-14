@@ -12,7 +12,6 @@
 class IntelligentAgent : public Agent
 {
 private:
-//	KnowledgeBase kb;
 	std::queue<Move> moves;
 
 	// Pushes the appropriate number of turns onto the moves queue
