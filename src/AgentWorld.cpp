@@ -35,20 +35,19 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	if (roomHasContent(room, RoomContent::BUMP)) {
 		content.push_back(RoomContent::BUMP);
 	}
-	std::cout << "Setting room " << room << " to visited\n";
 	world.at(room).setRoomStatus(RoomStatus::VISITED);
-	std::cout << "Current room is " << (getRoomStatus(room) == RoomStatus::VISITED ? "Visited\n": "Fringe\n");
 	return content;
 }
 
 int AgentWorld::adjacentRoom(int room, Direction dir) {
+	std::cout << "Found adjacent rooms at " << world.at(room).adjacentRoom(dir) << std::endl;
 	return world.at(room).adjacentRoom(dir);
 }
 
 std::vector<int> AgentWorld::adjacentRooms(int room) {
 	std::vector<int> rooms = std::vector<int>();
 	for (Direction d : directionVector()) {
-		int r = world.at(room).adjacentRoom(d);
+		int r = adjacentRoom(room, d);
 		if (r > -1) rooms.push_back(r);
 	}
 	return rooms;

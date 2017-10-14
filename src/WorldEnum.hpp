@@ -11,7 +11,14 @@
 #include <vector>
 
 enum class Direction { NORTH, EAST, SOUTH, WEST };
-inline std::vector<Direction> directionVector() {return {Direction::NORTH, Direction::EAST, Direction::SOUTH, Direction::WEST }; }
+inline std::vector<Direction> directionVector() {
+	std::vector<Direction> d = std::vector<Direction>();
+	d.push_back(Direction::NORTH);
+	d.push_back(Direction::EAST);
+	d.push_back(Direction::SOUTH);
+	d.push_back(Direction::WEST);
+	return d;
+}
 
 inline Direction right(Direction d) {
 	switch(d) {
