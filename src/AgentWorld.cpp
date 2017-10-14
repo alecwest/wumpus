@@ -40,7 +40,6 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 }
 
 int AgentWorld::adjacentRoom(int room, Direction dir) {
-	std::cout << "Found adjacent rooms at " << world.at(room).adjacentRoom(dir) << std::endl;
 	return world.at(room).adjacentRoom(dir);
 }
 
@@ -96,18 +95,22 @@ RoomStatus AgentWorld::getRoomStatus(int room) {
 }
 
 bool AgentWorld::roomHasContent(int room, RoomContent rc) {
+	if (room < 0 || room > getGridSize()) return false;
 	return getRoom(room).hasContent(rc);
 }
 
 bool AgentWorld::roomIsEmpty(int room) {
+	if (room < 0 || room > getGridSize()) return false;
 	return getRoom(room).roomEmpty();
 }
 
 void AgentWorld::addRoomContent(int room, RoomContent rc) {
+	if (room < 0 || room > getGridSize()) return;
 	world.at(room).addRoomContent(rc);
 }
 
 bool AgentWorld::removeRoomContent(int room, RoomContent rc) {
+	if (room < 0 || room > getGridSize()) return false;
 	return world.at(room).removeRoomContent(rc);
 }
 
@@ -120,11 +123,18 @@ void AgentWorld::addInference(int room, Inference i) {
 		world.at(room).addInference(i);
 }
 
+void AgentWorld::removeInference(int room, Inference i) {
+	if (room < 0 || room > getGridSize()) return;
+	world.at(room).removeInference(i);
+}
+
 bool AgentWorld::hasInference(int room, Inference i) {
+	if (room < 0 || room > getGridSize()) return false;
 	return world.at(room).hasInference(i);
 }
 
 bool AgentWorld::safeRoom(int room) {
+	if (room < 0 || room > getGridSize()) return false;
 	return world.at(room).safeRoom();
 }
 

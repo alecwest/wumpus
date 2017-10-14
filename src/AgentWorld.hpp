@@ -32,6 +32,7 @@ public:
 	std::vector<int> adjacentDiagonalRooms(int room);
 	std::vector<Inference> getInferences(int room);
 	void addInference(int room, Inference i);
+	void removeInference(int room, Inference i);
 	bool hasInference(int room, Inference i);
 	bool safeRoom(int room);
 	Room getRoom(int room);
