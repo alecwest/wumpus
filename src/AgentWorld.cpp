@@ -21,8 +21,9 @@ AgentWorld::AgentWorld(const GameWorld &gw) : World() {
 AgentWorld::~AgentWorld() {
 }
 
-AgentWorld* AgentWorld::clone() {
-}
+// TODO remove this?
+//AgentWorld* AgentWorld::clone() {
+//}
 
 std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	Room currentRoom = gameWorld.getRoom(room);
@@ -34,7 +35,9 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	if (roomHasContent(room, RoomContent::BUMP)) {
 		content.push_back(RoomContent::BUMP);
 	}
-	world.at(room).setRoomStatus(RoomStatus::VISITED);
+	std::cout << "Setting room " << room << " to visited\n";
+	world.at(room).setRoomStatus(RoomStatus::UNKNOWN);
+	std::cout << "Current room is " << (getRoomStatus(room) == RoomStatus::VISITED ? "Visited\n": "Fringe\n");
 	return content;
 }
 
@@ -101,7 +104,9 @@ Room AgentWorld::getRoom(int room) {
 }
 
 RoomStatus AgentWorld::getRoomStatus(int room) {
-	return world.at(room).getRoomStatus();
+	if (room > 0 && room < (int) world.size())
+		return world.at(room).getRoomStatus();
+	return static_cast<RoomStatus>(NULL);
 }
 
 bool AgentWorld::roomHasContent(int room, RoomContent rc) {
@@ -118,6 +123,27 @@ void AgentWorld::addRoomContent(int room, RoomContent rc) {
 
 bool AgentWorld::removeRoomContent(int room, RoomContent rc) {
 	return world.at(room).removeRoomContent(rc);
+}
+
+std::vector<Inference> AgentWorld::getInferences(int room) {
+	return world.at(room).getInferences();
+}
+
+void AgentWorld::addInference(int room, Inference i) {
+	if (room > 0 && room < (int) world.size())
+		world.at(room).addInference(i);
+}
+
+bool AgentWorld::hasInference(int room, Inference i) {
+	return world.at(room).hasInference(i);
+}
+
+bool AgentWorld::safeRoom(int room) {
+	return world.at(room).safeRoom();
+}
+
+void AgentWorld::setRoomStatus(int room, RoomStatus rs) {
+	world.at(room).setRoomStatus(rs);
 }
 
 void AgentWorld::printWorld() {

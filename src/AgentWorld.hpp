@@ -20,7 +20,7 @@ public:
 	AgentWorld();
 	AgentWorld(const GameWorld &gw);
 	virtual ~AgentWorld();
-	AgentWorld* clone();
+//	AgentWorld* clone(); // TODO remove this?
 	// RoomContent should include dead agent and regular supmuw and evil supmuw (evil supmuw not necessary if agent is dead?)
 	// RoomContent should include a piece of food if supmuw not near wumpus (is normal wumpus) and not in a pit
 	// If supmuw is in a pit, then no food will be left out and the pit is harmless
@@ -30,7 +30,12 @@ public:
 	int adjacentRoom(int room, Direction dir);
 	std::vector<int> adjacentRooms(int room);
 	std::vector<int> adjacentDiagonalRooms(int room);
+	std::vector<Inference> getInferences(int room);
+	void addInference(int room, Inference i);
+	bool hasInference(int room, Inference i);
+	bool safeRoom(int room);
 	Room getRoom(int room);
+	void setRoomStatus(int room, RoomStatus rs);
 	RoomStatus getRoomStatus(int room);
 	bool roomHasContent(int room, RoomContent rc);
 	bool roomIsEmpty(int room);

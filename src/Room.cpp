@@ -57,7 +57,7 @@ void Room::addRoomContent(RoomContent rc) {
 
 bool Room::removeRoomContent(RoomContent rc) {
 	std::ptrdiff_t pos = distance(content.begin(), std::find(content.begin(), content.end(), rc));
-	if (pos >= (unsigned int) content.size()) {
+	if (pos >= (int) content.size()) {
 		return false;
 	}
 	content.erase(content.begin() + pos);
@@ -85,5 +85,11 @@ bool Room::hasContent(RoomContent rc) {
 }
 
 bool Room::roomEmpty() {
-	return content.size() == 0;
+	bool agentOnly = content.size() == 1 &&
+			(hasContent(RoomContent::AGENT_DEAD) ||
+			 hasContent(RoomContent::AGENT_EAST) ||
+			 hasContent(RoomContent::AGENT_NORTH) ||
+			 hasContent(RoomContent::AGENT_SOUTH) ||
+			 hasContent(RoomContent::AGENT_WEST));
+	return content.size() == 0 || agentOnly;
 }

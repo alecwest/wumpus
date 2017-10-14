@@ -68,7 +68,7 @@ GameWorld::GameWorld(std::string fileName) : World() {
 GameWorld::~GameWorld() {}
 
 void GameWorld::addToRoom(int room, RoomContent rc) {
-	if (room < 0 || room > world.size()) {
+	if (room < 0 || room > (int)world.size()) {
 		return; // Ignore attempts to place content outside of boundaries
 	}
 	std::vector<int> adjRooms = adjacentRooms(room);
