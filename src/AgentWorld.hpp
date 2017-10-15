@@ -30,11 +30,15 @@ public:
 	int adjacentRoom(int room, Direction dir);
 	std::vector<int> adjacentRooms(int room);
 	std::vector<int> adjacentDiagonalRooms(int room);
+	std::vector<int> allAdjacentRooms(int room);
 	std::vector<Inference> getInferences(int room);
 	void addInference(int room, Inference i);
 	void removeInference(int room, Inference i);
 	bool hasInference(int room, Inference i);
 	bool safeUnvisitedRoom(int room);
+	// Returns true if room is safe, but not necessarily visited
+	bool safeRoom(int room);
+	bool roomVisited(int room);
 	Room getRoom(int room);
 	int getNumRooms();
 	void setRoomStatus(int room, RoomStatus rs);

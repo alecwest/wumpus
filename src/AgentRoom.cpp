@@ -59,6 +59,13 @@ bool AgentRoom::safeUnvisitedRoom() {
 		 && !hasInference(Inference::CONTAINS_WUMPUS));
 }
 
+bool AgentRoom::safeRoom() {
+	// TODO should a room that contains the supmuw be considered safe?
+	return (!hasInference(Inference::CONTAINS_PIT)
+		 && !hasInference(Inference::CONTAINS_SUPMUW_EVIL)
+		 && !hasInference(Inference::CONTAINS_WUMPUS));
+}
+
 bool AgentRoom::roomVisited() {
 	return status == RoomStatus::VISITED;
 }

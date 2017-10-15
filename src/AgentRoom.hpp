@@ -32,6 +32,10 @@ public:
 	 */
 	bool safeUnvisitedRoom();
 	/*
+	 * Returns true if room is pit free, wumpus free, and evil supmuw free. Visited doesn't matter
+	 */
+	bool safeRoom();
+	/*
 	 * Returns true if room is visited
 	 */
 	bool roomVisited();

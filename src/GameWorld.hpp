@@ -27,6 +27,7 @@ public:
 	int adjacentRoom(int room, Direction dir);
 	std::vector<int> adjacentRooms(int room);
 	std::vector<int> adjacentDiagonalRooms(int room);
+	std::vector<int> allAdjacentRooms(int room);
 	Room getRoom(int room);
 	int getNumRooms();
 	bool roomHasContent(int room, RoomContent rc);

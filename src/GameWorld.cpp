@@ -190,6 +190,16 @@ std::vector<int> GameWorld::adjacentDiagonalRooms(int room) {
 	return rooms;
 }
 
+std::vector<int> GameWorld::allAdjacentRooms(int room) {
+	std::vector<int> adjRooms = adjacentRooms(room);
+	std::vector<int> diagRooms = adjacentDiagonalRooms(room);
+	std::vector<int> allRooms;
+	allRooms.reserve( adjRooms.size() + diagRooms.size() ); // preallocate memory
+	allRooms.insert( allRooms.end(), adjRooms.begin(), adjRooms.end() );
+	allRooms.insert( allRooms.end(), diagRooms.begin(), diagRooms.end() );
+	return allRooms;
+}
+
 Room GameWorld::getRoom(int room) {
 	if (room >= 0 && room < (int) world.size()) {
 		return world.at(room);

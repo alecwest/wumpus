@@ -14,7 +14,10 @@ class IntelligentAgent : public Agent
 {
 private:
 	std::queue<Move> moves;
-
+	std::vector<int> stenchesFound;
+	std::vector<int> moosFound;
+	int wumpusRoom;
+	int supmuwRoom;
 	// Pushes the appropriate number of turns onto the moves queue
 	void turn(Direction d);
 	// Turns agent around and back tracks n rooms
@@ -31,10 +34,14 @@ private:
 	void faceRoom(int r);
 	// Go to adjacent room
 	void goToRoom(int r);
-	// Push a series of steps that leads to the closest accessible fringe room
+	// Find the closest FRINGE room (that the agent can safely reach) and take that path
 	void pathToFringe();
 	// Finds the fastest path to a safe Fringe room
-	std::queue<Move> recursiveBestFirstSearch(int currRoom, Direction currDir, std::queue<Move> movesToAdd);
+	std::queue<Move> depthLimitedSearch(int currRoom, Direction currDir, std::queue<Move> movesToAdd, int depth);
+	// Returns true if wumpus room has been identified
+	bool wumpusRoomFound();
+	// Returns true if supmuw room has been identified
+	bool supmuwRoomFound();
 public:
 	IntelligentAgent();
 	IntelligentAgent(const GameWorld &gw);

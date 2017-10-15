@@ -26,6 +26,7 @@ public:
 	virtual int adjacentRoom(int room, Direction dir) = 0;
 	virtual std::vector<int> adjacentRooms(int room) = 0;
 	virtual std::vector<int> adjacentDiagonalRooms(int room) = 0; // Primary used for Supmuw's Moo
+	virtual std::vector<int> allAdjacentRooms(int room) = 0;
 	virtual Room getRoom(int room) = 0;
 	virtual bool roomHasContent(int room, RoomContent rc) = 0;
 	virtual void addRoomContent(int room, RoomContent rc) = 0;
