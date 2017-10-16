@@ -18,6 +18,7 @@ private:
 	std::vector<int> moosFound;
 	int wumpusRoom;
 	int supmuwRoom;
+	bool supmuwEvil;
 	// Pushes the appropriate number of turns onto the moves queue
 	void turn(Direction d);
 	// Turns agent around and back tracks n rooms
@@ -28,6 +29,8 @@ private:
 	void markSafe(int r);
 	// Mark a room with a single inference
 	void markRoom(int r, Inference i);
+	bool safeUnvisitedRoom(int r);
+	bool safeRoom(int r);
 	// Make inferences about surrounding rooms based on what is seen in the current room
 	void inferRooms();
 	// Determine which direction to turn and face it (assuming r is an adjacent room)

@@ -43,6 +43,7 @@ IntelligentAgent::IntelligentAgent() : Agent() {
 	moosFound = std::vector<int>();
 	wumpusRoom = -1;
 	supmuwRoom = -1;
+	supmuwEvil = true;
 }
 
 IntelligentAgent::IntelligentAgent(const GameWorld &gw) : Agent(gw) {
@@ -51,6 +52,7 @@ IntelligentAgent::IntelligentAgent(const GameWorld &gw) : Agent(gw) {
 	moosFound = std::vector<int>();
 	wumpusRoom = -1;
 	supmuwRoom = -1;
+	supmuwEvil = true;
 }
 
 IntelligentAgent::~IntelligentAgent() {}
@@ -75,6 +77,19 @@ void IntelligentAgent::markRoom(int r, Inference i) {
 	}
 }
 
+bool IntelligentAgent::safeUnvisitedRoom(int r) {
+	return ((wumpusRoom != r || info.wumpusKilled) &&
+			((supmuwRoom != r || info.supmuwKilled) || (supmuwRoom == r && !supmuwEvil)) &&
+			world.safeUnvisitedRoom(r));
+}
+
+bool IntelligentAgent::safeRoom(int r) {
+	return ((r == info.safeRoom) ||
+			((wumpusRoom != r || info.wumpusKilled) &&
+					((supmuwRoom != r || info.supmuwKilled) && (supmuwRoom == r && !supmuwEvil)) &&
+					world.safeRoom(r)));
+}
+
 // TODO can be refactored
 void IntelligentAgent::inferRooms() {
 	/*
@@ -84,13 +99,13 @@ void IntelligentAgent::inferRooms() {
 	 */
 
 	std::vector<int> adjRooms = world.adjacentRooms(room);
-	if (world.roomIsEmpty(room)) {
-		for (int r : adjRooms) {
-			if (r < 0 || r > world.getNumRooms()) continue;
-			// Mark this room as completely safe. Orthogonal adjacency to a empty space guarantees safety
-			markSafe(r);
-		}
-	}
+//	if (world.roomIsEmpty(room)) {
+//		for (int r : adjRooms) {
+//			if (r < 0 || r > world.getNumRooms()) continue;
+//			 Mark this room as completely safe. Orthogonal adjacency to a empty space guarantees safety
+//			markSafe(r);
+//		}
+//	}
 	if (world.roomHasContent(room, RoomContent::BREEZE)) {
 		for (int r : adjRooms) {
 			if (r < 0 || r > world.getNumRooms()) continue;
@@ -98,6 +113,13 @@ void IntelligentAgent::inferRooms() {
 			markRoom(r, Inference::CONTAINS_PIT);
 		}
 	}
+	else {
+		for (int r : adjRooms) {
+			if (r < 0 || r > world.getNumRooms()) continue;
+			markRoom(r, Inference::PIT_FREE);
+		}
+	}
+
 	if (world.roomHasContent(room, RoomContent::BUMP)) { // TODO assuming agent knows the grid is a square, but not the size of it until it hits the edge
 		int r = room;
 		markRoom(r, Inference::EDGE);
@@ -134,6 +156,14 @@ void IntelligentAgent::inferRooms() {
 			markRoom(r, Inference::CONTAINS_SUPMUW_EVIL);
 		}
 	}
+	else {
+		for (int r : adjRooms) {
+			if (r < 0 || r > world.getNumRooms()) continue;
+			markRoom(r, Inference::SUPMUW_FREE);
+			markRoom(r, Inference::SUPMUW_EVIL_FREE);
+		}
+	}
+
 	if (world.roomHasContent(room, RoomContent::STENCH)) {
 		if (std::find(stenchesFound.begin(), stenchesFound.end(), room) == stenchesFound.end()) stenchesFound.push_back(room);
 		std::cout << "Testing:: Num stenches found = " << stenchesFound.size() << std::endl;
@@ -141,6 +171,12 @@ void IntelligentAgent::inferRooms() {
 			if (r < 0 || r > world.getNumRooms()) continue;
 			// Mark adjacent rooms as possible containers for wumpus
 			markRoom(r, Inference::CONTAINS_WUMPUS);
+		}
+	}
+	else {
+		for (int r : adjRooms) {
+			if (r < 0 || r > world.getNumRooms()) continue;
+			markRoom(r, Inference::WUMPUS_FREE);
 		}
 	}
 
@@ -163,10 +199,21 @@ void IntelligentAgent::inferRooms() {
 			if (roomsWithStench == (int)stenchesFound.size()) {
 				candidateRooms.push_back(roomToCheck);
 			}
+			else {
+				// If room doesn't have all the identified stench rooms adjacent to it, it can't be a wumpus room
+				world.addInference(roomToCheck, Inference::WUMPUS_FREE);
+			}
 		}
 		if (candidateRooms.size() == 1) {
 			wumpusRoom = candidateRooms.at(0);
 			std::cout << "Testing:: Agent determined location of Wumpus to be " << wumpusRoom << std::endl;
+			if (wumpusRoomFound() && supmuwRoomFound()) {
+				if (std::abs(wumpusRoom - supmuwRoom) != 1 && std::abs(wumpusRoom - supmuwRoom) != 10) {
+					std::cout << "Testing:: Supmuw is not evil!\n";
+					world.addInference(supmuwRoom, Inference::SUPMUW_EVIL_FREE);
+					supmuwEvil = false;
+				}
+			}
 		}
 		else {
 			std::cout << "Could not determine the location of the Wumpus\n";
@@ -191,10 +238,22 @@ void IntelligentAgent::inferRooms() {
 			if (roomsWithMoo == (int)moosFound.size()) {
 				candidateRooms.push_back(roomToCheck);
 			}
+			else {
+				// If room doesn't have all the identified moo rooms adjacent to it, it can't be a supmuw room
+				world.addInference(roomToCheck, Inference::SUPMUW_FREE);
+				world.addInference(roomToCheck, Inference::SUPMUW_EVIL_FREE);
+			}
 		}
 		if (candidateRooms.size() == 1) {
 			supmuwRoom = candidateRooms.at(0);
 			std::cout << "Testing:: Agent determined location of Supmuw to be " << supmuwRoom << std::endl;
+			if (wumpusRoomFound() && supmuwRoomFound()) {
+				if (std::abs(wumpusRoom - supmuwRoom) != 1 && std::abs(wumpusRoom - supmuwRoom) != 10) {
+					std::cout << "Testing:: Supmuw is not evil!\n";
+					world.addInference(supmuwRoom, Inference::SUPMUW_EVIL_FREE);
+					supmuwEvil = false;
+				}
+			}
 		}
 		else {
 			std::cout << "Could not determine the location of the Supmuw\n";
@@ -321,10 +380,10 @@ bool IntelligentAgent::supmuwRoomFound() {
 // TODO wumpus can't be in a pit
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
-	int numAdjVisited;
+	int numAdjChecked;
 	printWorld();
 	while (!info.gameOver) {
-		numAdjVisited = 0;
+		numAdjChecked = 0;
 		adjRooms = world.adjacentRooms(room);
 		inferRooms();
 		// Find a not yet visited room that is safe
@@ -335,9 +394,9 @@ void IntelligentAgent::makeMove() {
 				moves.push(Move::FORWARD);
 				break;
 			}
-			if (world.getRoomStatus(r) == RoomStatus::VISITED) numAdjVisited++;
+			if (world.getRoomStatus(r) == RoomStatus::VISITED || !world.safeRoom(r)) numAdjChecked++;
 			// If all adjacent rooms are visited or unsafe, don't double back.
-			if (numAdjVisited == (int)adjRooms.size()) {
+			if (numAdjChecked == (int)adjRooms.size()) {
 				// Find the closest Fringe (that you can safely reach) and take that path
 				pathToFringe();
 				std::cout << "Testing:: Moves has " << moves.size() << " moves in it\n";
