@@ -40,11 +40,13 @@ private:
 	// Find the closest FRINGE room (that the agent can safely reach) and take that path
 	void pathToFringe();
 	// Finds the fastest path to a safe Fringe room
-	std::queue<Move> depthLimitedSearch(int currRoom, Direction currDir, std::queue<Move> movesToAdd, int depth);
+	std::queue<Move> depthLimitedSearch(int currRoom, Direction currDir, std::queue<Move> movesToAdd, int depth, bool targetHome);
 	// Returns true if wumpus room has been identified
 	bool wumpusRoomFound();
 	// Returns true if supmuw room has been identified
 	bool supmuwRoomFound();
+	// Finds path back to safe room
+	void returnToSafeRoom();
 public:
 	IntelligentAgent();
 	IntelligentAgent(const GameWorld &gw);

@@ -85,7 +85,7 @@ struct ExplorationStats {
 	bool gameOver = false;
 	int arrowShot = 0;
 	int foodShared = 0;
-	int goldFound = 0;
+	bool goldFound = false;
 	int movesTaken = 0;
 	bool supmuwKilled = false; // TODO assuming one supmuw and wumpus
 	bool wumpusKilled = false;

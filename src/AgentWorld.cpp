@@ -35,6 +35,10 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	if (roomHasContent(room, RoomContent::BUMP)) {
 		content.push_back(RoomContent::BUMP);
 	}
+	// If FOOD is found, remove it
+	if (roomHasContent(room, RoomContent::FOOD)) {
+		removeRoomContent(room, RoomContent::FOOD);
+	}
 	world.at(room).setRoomStatus(RoomStatus::VISITED);
 	return content;
 }

@@ -30,6 +30,7 @@ int Agent::calculateScore() {
 	score += info.foodShared * 100;
 	score += info.goldFound * 1000;
 	score += info.movesTaken * -1;
+	score += !info.alive * -1000;
 	return score;
 }
 
@@ -187,7 +188,7 @@ void Agent::forward() {
 
 void Agent::grab() {
 	if(world.roomHasContent(room, RoomContent::GLITTER) && world.roomHasContent(room, RoomContent::GOLD)) {
-		info.goldFound++;
+		info.goldFound = true;
 		world.removeRoomContent(room, RoomContent::GOLD);
 	}
 }

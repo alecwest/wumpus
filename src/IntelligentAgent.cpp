@@ -92,20 +92,17 @@ bool IntelligentAgent::safeRoom(int r) {
 
 // TODO can be refactored
 void IntelligentAgent::inferRooms() {
-	/*
-	 * If there is more than one wumpus square, we can attempt to identify it
-	 * by checking rooms for having that many adjacent stench squares (and being unvisited). If only one such square exists, then that is the wumpus' location
-	 * Do the same for the supmuw. If the Wumpus location is known, and the Supmuw is identified as adjacent to it or in the same block, mark it as evil
-	 */
+
+	///////////////////////////////////////////////
+	// ******* Identify Possible Content ******* //
+	///////////////////////////////////////////////
 
 	std::vector<int> adjRooms = world.adjacentRooms(room);
-//	if (world.roomIsEmpty(room)) {
-//		for (int r : adjRooms) {
-//			if (r < 0 || r > world.getNumRooms()) continue;
-//			 Mark this room as completely safe. Orthogonal adjacency to a empty space guarantees safety
-//			markSafe(r);
-//		}
-//	}
+
+	if (not info.goldFound and world.roomHasContent(room, RoomContent::GLITTER)) {
+		moves.push(Move::GRAB);
+	}
+
 	if (world.roomHasContent(room, RoomContent::BREEZE)) {
 		for (int r : adjRooms) {
 			if (r < 0 || r > world.getNumRooms()) continue;
@@ -179,6 +176,11 @@ void IntelligentAgent::inferRooms() {
 			markRoom(r, Inference::WUMPUS_FREE);
 		}
 	}
+
+
+	///////////////////////////////////////////
+	// ******* Begin Danger Location ******* //
+	///////////////////////////////////////////
 
 	// TODO the stench and moo checks can be refactored
 	if (world.roomHasContent(room, RoomContent::STENCH) && (int)stenchesFound.size() > 1) {
@@ -282,7 +284,7 @@ void IntelligentAgent::goToRoom(int r) {
 
 void IntelligentAgent::pathToFringe() {
 	std::queue<Move> movesToAdd;
-	movesToAdd = depthLimitedSearch(room, dir, movesToAdd, 0);
+	movesToAdd = depthLimitedSearch(room, dir, movesToAdd, 0, false);
 	moves = movesToAdd;
 	/*
 	 * If current node is Fringe, return movesToAdd
@@ -294,9 +296,9 @@ void IntelligentAgent::pathToFringe() {
 	 * Add these new directions, and then get the children
 	 */
 	// TODO remove this
-	std::cout << "Here's the added moves:\n";
+	std::cout << "Testing:: Here's the added moves:\n";
 	while (!movesToAdd.empty()) {
-		Move m = moves.front();
+		Move m = movesToAdd.front();
 		switch(m) {
 		case Move::LEFT:
 			std::cout << "Move left\n"; break;
@@ -313,9 +315,11 @@ void IntelligentAgent::pathToFringe() {
 // TODO rename method
 std::queue<Move> IntelligentAgent::depthLimitedSearch(
 				int currRoom, Direction currDir,
-				std::queue<Move> pathMoves, int depth) {
+				std::queue<Move> pathMoves, int depth, bool targetHome) {
 //	std::cout << "Testing:: Recursive depth is " << depth << std::endl;
-	if (world.safeUnvisitedRoom(currRoom)) {
+	bool finalCheck = world.safeUnvisitedRoom(currRoom);
+	if (targetHome) finalCheck = (currRoom == info.safeRoom);
+	if (finalCheck) {
 //		std::cout << "Testing:: Room " << currRoom << " is safe and unvisited\n";
 		return pathMoves;
 	}
@@ -326,20 +330,23 @@ std::queue<Move> IntelligentAgent::depthLimitedSearch(
 	if (successors.empty()) return std::queue<Move>();
 	for (auto s : successors) {
 		for (auto d : directionVector()) {
-			if (world.adjacentRoom(currRoom, d) == s && world.safeRoom(s)) {
+			if (world.adjacentRoom(currRoom, d) == s
+					&& world.safeRoom(s)
+					&& (world.getRoomStatus(s) == RoomStatus::VISITED || !targetHome)) {
 				Direction agentDir = currDir;
 				std::queue<Move> pathMovesAndNew = pathMoves;
 				// TODO If this algorithm can't find a path, then it's probably time to give up
 				// TODO Test this is the *only* path finder
 				// TODO Doesn't seem terribly effective as the only finder... yet. It walked into the wumpus
-				// TODO Add some logic that helps pinpoint the location of wumpus and supmuw (and if its evil) based on multiple stench or moo markers
 				while(agentDir != d) {
-					pathMovesAndNew.push(bestDirectionToTurn(dir, d));
-					agentDir = right(agentDir);
+					Move nextMove = bestDirectionToTurn(agentDir, d);
+					pathMovesAndNew.push(nextMove);
+					if (nextMove == Move::LEFT) agentDir = left(agentDir);
+					else agentDir = right(agentDir);
 				}
 				pathMovesAndNew.push(Move::FORWARD);
 
-				paths.push_back(depthLimitedSearch(s, agentDir, pathMovesAndNew, depth+1));
+				paths.push_back(depthLimitedSearch(s, agentDir, pathMovesAndNew, depth+1, targetHome));
 			}
 		}
 	}
@@ -353,17 +360,6 @@ std::queue<Move> IntelligentAgent::depthLimitedSearch(
 		}
 	}
 	if (bestPathIndex == 1000) return std::queue<Move>();
-//	std::queue<Move> best = paths.at(bestPathIndex);
-	// TODO remove this
-//	std::cout << "Here are the proposed moves being returned at this path\n";
-//	while (!best.empty()) {
-//		Move m = best.front();
-//		best.pop();
-//		if (m == Move::LEFT) std::cout << "Move left\n";
-//		else if (m == Move::RIGHT) std::cout << "Move right\n";
-//		else if (m == Move::FORWARD) std::cout << "Move forward\n";
-//	}
-//	std::cout << "Reached the end.\n";
 	return paths.at(bestPathIndex);
 }
 
@@ -375,8 +371,28 @@ bool IntelligentAgent::supmuwRoomFound() {
 	return supmuwRoom >= 0;
 }
 
+void IntelligentAgent::returnToSafeRoom() {
+	std::queue<Move> movesToAdd;
+	movesToAdd = depthLimitedSearch(room, dir, movesToAdd, 0, false);
+	moves = movesToAdd;
+	// TODO remove this
+	std::cout << "Testing:: Here's the added moves to get home:\n";
+	while (!movesToAdd.empty()) {
+		Move m = movesToAdd.front();
+		switch(m) {
+		case Move::LEFT:
+			std::cout << "Move left\n"; break;
+		case Move::RIGHT:
+			std::cout << "Move right\n"; break;
+		case Move::FORWARD:
+			std::cout << "Move forward\n"; break;
+		default: break;
+		}
+		movesToAdd.pop();
+	}
+}
+
 // TODO when bump is encountered, knowledge about an edge should be added
-// TODO can assume only one wumpus, supmuw
 // TODO wumpus can't be in a pit
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
@@ -386,25 +402,49 @@ void IntelligentAgent::makeMove() {
 		numAdjChecked = 0;
 		adjRooms = world.adjacentRooms(room);
 		inferRooms();
-		// Find a not yet visited room that is safe
-		for (auto r : adjRooms) {
-			// Find room that is known to be safe, and move there
-			if(world.safeUnvisitedRoom(r)) {
-				faceRoom(r);
-				moves.push(Move::FORWARD);
-				break;
+		if (info.goldFound) {
+			if (room == info.safeRoom) {
+				moves.push(Move::EXIT);
 			}
-			if (world.getRoomStatus(r) == RoomStatus::VISITED || !world.safeRoom(r)) numAdjChecked++;
-			// If all adjacent rooms are visited or unsafe, don't double back.
-			if (numAdjChecked == (int)adjRooms.size()) {
-				// Find the closest Fringe (that you can safely reach) and take that path
-				pathToFringe();
-				std::cout << "Testing:: Moves has " << moves.size() << " moves in it\n";
+			else {
+				// TODO current implementation seems to want to continue exploring unvisited rooms?
+				// TODO instead of returning the shortest non zero route, return the route that brings us closest to home (distance formula)
+				returnToSafeRoom();
+				// TODO need a better way to get out than just moving as far west and south as possible
+				if (moves.size() == 0){
+					if (world.safeRoom(world.adjacentRoom(room, Direction::WEST))) {
+						turn(Direction::WEST);
+						moves.push(Move::FORWARD);
+					}
+					else if (world.safeRoom(world.adjacentRoom(room, Direction::SOUTH))) {
+						turn(Direction::SOUTH);
+						moves.push(Move::FORWARD);
+					}
+				}
 			}
 		}
-		// If no move was determined, double back to the previous room
-		if (moves.size() == 0) {
-			goBack(1);
+		// Skip if we found glitter while inferring
+		else if (not world.roomHasContent(room, RoomContent::GLITTER)) {
+			// Find a not yet visited room that is safe
+			for (auto r : adjRooms) {
+				// Find room that is known to be safe, and move there
+				if(world.safeUnvisitedRoom(r)) {
+					faceRoom(r);
+					moves.push(Move::FORWARD);
+					break;
+				}
+				if (world.getRoomStatus(r) == RoomStatus::VISITED || !world.safeRoom(r)) numAdjChecked++;
+				// If all adjacent rooms are visited or unsafe, don't double back.
+				if (numAdjChecked == (int)adjRooms.size()) {
+					// Find the closest Fringe (that you can safely reach) and take that path
+					pathToFringe();
+	//				std::cout << "Testing:: Moves has " << moves.size() << " moves in it\n";
+				}
+			}
+			// If no move was determined, double back to the previous room
+			if (moves.size() == 0) {
+				goBack(1);
+			}
 		}
 
 		processMoves();
