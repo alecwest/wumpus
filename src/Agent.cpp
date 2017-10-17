@@ -85,6 +85,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	}
 	else if (food_shared) {
 		info.foodShared++;
+		std::cout << "Testing:: Removing Food Content\n";
 		world.removeRoomContent(room, RoomContent::FOOD);
 	}
 	// Process your move's encounter message
@@ -109,7 +110,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 		message += pit_exists ? "The Supmuw is so big he kept you from falling into the pit!\n" : "";
 	}
 	else if (pit_exists) {
-		message += wumpus_attack ? "You step on a Wumpus' head. He doesn't seem too happy about it.\n" : "";
+		message += wumpus_attack ? "You step on a Wumpus' head. He doesn't seem too happy about it.\n" : ""; // TODO remove this and any ability to place Wumpus in pits
 		message += supmuw_attack ? "You step on a Supmuw's head. He doesn't seem too happy about it.\n" : "You tripped and fell into a pit.\n";
 	}
 	else if (wumpus_attack) {

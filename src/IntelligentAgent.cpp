@@ -117,7 +117,7 @@ void IntelligentAgent::inferRooms() {
 		}
 	}
 
-	if (world.roomHasContent(room, RoomContent::BUMP)) { // TODO assuming agent knows the grid is a square, but not the size of it until it hits the edge
+	if (world.roomHasContent(room, RoomContent::BUMP)) { // TODO assuming agent knows the grid is a square, but not the size of it until it hits the edge (I don't think I'm assuming this anymore...lol)
 		int r = room;
 		markRoom(r, Inference::EDGE);
 		if (dir == Direction::NORTH || dir == Direction::SOUTH) {
@@ -261,7 +261,7 @@ void IntelligentAgent::inferRooms() {
 			std::cout << "Could not determine the location of the Supmuw\n";
 		}
 	}
-	else if (supmuwRoomFound() && !wumpusRoomFound() && supmuwEvil) {
+	if (supmuwRoomFound() && !wumpusRoomFound() && supmuwEvil) {
 		bool noChanceForNearbyWumpus = true;
 		std::vector<int> roomsToCheck = world.adjacentRooms(supmuwRoom);
 		roomsToCheck.push_back(supmuwRoom);
@@ -420,7 +420,7 @@ void IntelligentAgent::makeMove() {
 
 		/*
 		 * Priorities:
-		 * 1. Visit friendly Supmuw if closeby
+		 * 1. Visit friendly Supmuw if closeby TODO ONLY ONCE. IT SEEMS TO BE CONTINUOUSLY GIVING FOOD OUT
 		 * 2. Leave if gold is found
 		 * 3. TODO shoot wumpus if location is known
 		 * 4. Continue exploring
