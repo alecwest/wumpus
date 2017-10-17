@@ -261,6 +261,21 @@ void IntelligentAgent::inferRooms() {
 			std::cout << "Could not determine the location of the Supmuw\n";
 		}
 	}
+	else if (supmuwRoomFound() && !wumpusRoomFound() && supmuwEvil) {
+		bool noChanceForNearbyWumpus = true;
+		std::vector<int> roomsToCheck = world.adjacentRooms(supmuwRoom);
+		roomsToCheck.push_back(supmuwRoom);
+		for (auto roomToCheck : roomsToCheck) {
+			if (world.hasInference(roomToCheck, Inference::CONTAINS_WUMPUS)) {
+				std::cout << "Testing:: Could not yet determine if the supmuw is evil\n";
+				noChanceForNearbyWumpus = false;
+			}
+		}
+		if (noChanceForNearbyWumpus) {
+			std::cout << "Testing:: Agent determined that supmuw room and it's adjacent rooms are wumpus free, making him friendly!\n";
+			supmuwEvil = false;
+		}
+	}
 }
 
 void IntelligentAgent::faceRoom(int r) {
@@ -323,7 +338,10 @@ std::queue<Move> IntelligentAgent::depthLimitedSearch(
 //		std::cout << "Testing:: Room " << currRoom << " is safe and unvisited\n";
 		return pathMoves;
 	}
-	if (depth == 5) return std::queue<Move>();
+	// TODO is changing the depthLimit a good idea?
+	// TODO instead, just trying comparing distances from home
+	int depthLimit = targetHome ? 10 : 5;
+	if (depth == depthLimit) return std::queue<Move>();
 
 	std::vector<std::queue<Move>> paths;
 	std::vector<int> successors = world.adjacentRooms(currRoom);
@@ -335,9 +353,6 @@ std::queue<Move> IntelligentAgent::depthLimitedSearch(
 					&& (world.getRoomStatus(s) == RoomStatus::VISITED || !targetHome)) {
 				Direction agentDir = currDir;
 				std::queue<Move> pathMovesAndNew = pathMoves;
-				// TODO If this algorithm can't find a path, then it's probably time to give up
-				// TODO Test this is the *only* path finder
-				// TODO Doesn't seem terribly effective as the only finder... yet. It walked into the wumpus
 				while(agentDir != d) {
 					Move nextMove = bestDirectionToTurn(agentDir, d);
 					pathMovesAndNew.push(nextMove);
@@ -373,7 +388,7 @@ bool IntelligentAgent::supmuwRoomFound() {
 
 void IntelligentAgent::returnToSafeRoom() {
 	std::queue<Move> movesToAdd;
-	movesToAdd = depthLimitedSearch(room, dir, movesToAdd, 0, false);
+	movesToAdd = depthLimitedSearch(room, dir, movesToAdd, 0, true);
 	moves = movesToAdd;
 	// TODO remove this
 	std::cout << "Testing:: Here's the added moves to get home:\n";
@@ -402,7 +417,21 @@ void IntelligentAgent::makeMove() {
 		numAdjChecked = 0;
 		adjRooms = world.adjacentRooms(room);
 		inferRooms();
-		if (info.goldFound) {
+
+		/*
+		 * Priorities:
+		 * 1. Visit friendly Supmuw if closeby
+		 * 2. Leave if gold is found
+		 * 3. TODO shoot wumpus if location is known
+		 * 4. Continue exploring
+		 * 5. Leave if all fringe rooms are unsafe
+		 */
+		if (supmuwRoomFound()
+				and not supmuwEvil
+				and std::find(adjRooms.begin(), adjRooms.end(), supmuwRoom) != adjRooms.end()) {
+			goToRoom(supmuwRoom);
+		}
+		else if (info.goldFound) {
 			if (room == info.safeRoom) {
 				moves.push(Move::EXIT);
 			}
@@ -423,14 +452,13 @@ void IntelligentAgent::makeMove() {
 				}
 			}
 		}
-		// Skip if we found glitter while inferring
-		else if (not world.roomHasContent(room, RoomContent::GLITTER)) {
+//		if (not world.roomHasContent(room, RoomContent::GLITTER))
+		else {
 			// Find a not yet visited room that is safe
 			for (auto r : adjRooms) {
 				// Find room that is known to be safe, and move there
 				if(world.safeUnvisitedRoom(r)) {
-					faceRoom(r);
-					moves.push(Move::FORWARD);
+					goToRoom(r);
 					break;
 				}
 				if (world.getRoomStatus(r) == RoomStatus::VISITED || !world.safeRoom(r)) numAdjChecked++;
