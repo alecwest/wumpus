@@ -8,7 +8,28 @@ GameWorld::GameWorld() : World() {
 	numGold = 0;
 	numSupmuw = 0;
 	numWumpus = 0;
-//	std::cout << "Testing:: Why am I in default GameWorld constructor???\n";
+
+	// Default grid size is 10
+	gridSize = 10;
+	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
+		world.push_back(GameRoom(i, gridSize));
+	}
+
+	// Generate random pit rooms
+	int pitChance;
+	for (auto w : world) {
+		pitChance = std::rand() % 100;
+		if (pitChance < 15) {
+			addToRoom(w.getRoom(), RoomContent::PIT);
+		}
+	}
+	// Generate random Wumpus, Supmuw, and Gold location
+	int wumpusLoc = std::rand() % getNumRooms();
+	int supmuwLoc = std::rand() % getNumRooms();
+	int goldLoc = std::rand() % getNumRooms();
+	addToRoom(wumpusLoc, RoomContent::WUMPUS);
+	addToRoom(supmuwLoc, RoomContent::SUPMUW);
+	addToRoom(goldLoc, RoomContent::GOLD);
 }
 
 GameWorld::GameWorld(std::string fileName) : World() {
@@ -33,7 +54,6 @@ GameWorld::GameWorld(std::string fileName) : World() {
 		world.push_back(GameRoom(i, gridSize));
 	}
 
-	// TODO needs to check for proper format (Content\nX-coord\nY-coord)
 	while (getline(file, line)) {
 		std::string content = line;
 		getline(file, line);

@@ -409,9 +409,8 @@ void IntelligentAgent::returnToSafeRoom() {
 }
 
 // TODO when bump is encountered, knowledge about an edge should be added
-// TODO wumpus can't be in a pit
-// TODO Agent still can't shoot
 // TODO Improve path home determiner
+// TODO see screenshot for map where agent jumps the gun on visiting Supmuw (not sure if friendly yet or not)
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
 	int numAdjChecked;
