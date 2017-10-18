@@ -86,6 +86,9 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 		if (roomHasContent(room, RoomContent::SUPMUW)) {
 			removeRoomContent(room, RoomContent::FOOD);
 		}
+		if (roomHasContent(room, RoomContent::WUMPUS)) {
+			return; // TODO Assuming pit cannot be placed in the same location as a Wumpus
+		}
 		addToAdjacentRooms(room, RoomContent::BREEZE);
 		break;
 	case RoomContent::SUPMUW:
@@ -109,12 +112,25 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 		for (auto r : allRooms) {
 			if (roomHasContent(r, RoomContent::SUPMUW)) {
 				removeRoomContent(r, RoomContent::SUPMUW);
-				// Should not be an issue if food isn't there (i.e. SUPMUW was in a pit)
 				removeRoomContent(r, RoomContent::FOOD);
 				addRoomContent(r, RoomContent::SUPMUW_EVIL);
 			}
 		}
-
+		// If a PIT exists in this room, remove it and any BREEZE only associated with it.
+		if (roomHasContent(room, RoomContent::PIT)) {
+			// TODO assuming Wumpus addition trumps pit addition
+			removeRoomContent(room, RoomContent::PIT);
+			for (auto r : adjRooms) {
+				bool keepBreeze = false;
+				for (auto ar : adjacentRooms(r)) {
+					if (roomHasContent(ar, RoomContent::PIT)) {
+						keepBreeze = true;
+						break;
+					}
+				}
+				if (not keepBreeze) removeRoomContent(r, RoomContent::BREEZE);
+			}
+		}
 		addToAdjacentRooms(room, RoomContent::STENCH);
 		numWumpus++;
 		break;

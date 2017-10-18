@@ -208,17 +208,17 @@ void IntelligentAgent::inferRooms() {
 		}
 		if (candidateRooms.size() == 1) {
 			wumpusRoom = candidateRooms.at(0);
-			std::cout << "Testing:: Agent determined location of Wumpus to be " << wumpusRoom << std::endl;
+//			std::cout << "Testing:: Agent determined location of Wumpus to be " << wumpusRoom << std::endl;
 			if (wumpusRoomFound() && supmuwRoomFound()) {
 				if (std::abs(wumpusRoom - supmuwRoom) != 1 && std::abs(wumpusRoom - supmuwRoom) != 10) {
-					std::cout << "Testing:: Supmuw is not evil!\n";
+//					std::cout << "Testing:: Supmuw is not evil!\n";
 					world.addInference(supmuwRoom, Inference::SUPMUW_EVIL_FREE);
 					supmuwEvil = false;
 				}
 			}
 		}
 		else {
-			std::cout << "Could not determine the location of the Wumpus\n";
+//			std::cout << "Testing:: Could not determine the location of the Wumpus\n";
 		}
 	}
 
@@ -327,7 +327,6 @@ void IntelligentAgent::pathToFringe() {
 	}
 }
 
-// TODO rename method
 std::queue<Move> IntelligentAgent::depthLimitedSearch(
 				int currRoom, Direction currDir,
 				std::queue<Move> pathMoves, int depth, bool targetHome) {
@@ -409,6 +408,8 @@ void IntelligentAgent::returnToSafeRoom() {
 
 // TODO when bump is encountered, knowledge about an edge should be added
 // TODO wumpus can't be in a pit
+// TODO Agent still can't shoot
+// TODO Improve path home determiner
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
 	int numAdjChecked;
