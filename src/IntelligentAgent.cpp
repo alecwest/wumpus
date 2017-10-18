@@ -248,17 +248,17 @@ void IntelligentAgent::inferRooms() {
 		}
 		if (candidateRooms.size() == 1) {
 			supmuwRoom = candidateRooms.at(0);
-			std::cout << "Testing:: Agent determined location of Supmuw to be " << supmuwRoom << std::endl;
+//			std::cout << "Testing:: Agent determined location of Supmuw to be " << supmuwRoom << std::endl;
 			if (wumpusRoomFound() && supmuwRoomFound()) {
 				if (std::abs(wumpusRoom - supmuwRoom) != 1 && std::abs(wumpusRoom - supmuwRoom) != 10) {
-					std::cout << "Testing:: Supmuw is not evil!\n";
+//					std::cout << "Testing:: Supmuw is not evil!\n";
 					world.addInference(supmuwRoom, Inference::SUPMUW_EVIL_FREE);
 					supmuwEvil = false;
 				}
 			}
 		}
 		else {
-			std::cout << "Could not determine the location of the Supmuw\n";
+//			std::cout << "Testing:: Could not determine the location of the Supmuw\n";
 		}
 	}
 	if (supmuwRoomFound() && !wumpusRoomFound() && supmuwEvil) {
@@ -267,12 +267,12 @@ void IntelligentAgent::inferRooms() {
 		roomsToCheck.push_back(supmuwRoom);
 		for (auto roomToCheck : roomsToCheck) {
 			if (world.hasInference(roomToCheck, Inference::CONTAINS_WUMPUS)) {
-				std::cout << "Testing:: Could not yet determine if the supmuw is evil\n";
+//				std::cout << "Testing:: Could not yet determine if the supmuw is evil\n";
 				noChanceForNearbyWumpus = false;
 			}
 		}
 		if (noChanceForNearbyWumpus) {
-			std::cout << "Testing:: Agent determined that supmuw room and it's adjacent rooms are wumpus free, making him friendly!\n";
+//			std::cout << "Testing:: Agent determined that supmuw room and it's adjacent rooms are wumpus free, making him friendly!\n";
 			supmuwEvil = false;
 		}
 	}

@@ -38,6 +38,8 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	// If FOOD is found, remove it
 	if (roomHasContent(room, RoomContent::FOOD)) {
 		removeRoomContent(room, RoomContent::FOOD);
+		// Without following line, the AgentWorld will continue perceiving food from GameWorld
+		gameWorld.removeRoomContent(room, RoomContent::FOOD);
 	}
 	world.at(room).setRoomStatus(RoomStatus::VISITED);
 	return content;

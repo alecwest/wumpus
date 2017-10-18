@@ -85,7 +85,6 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	}
 	else if (food_shared) {
 		info.foodShared++;
-		std::cout << "Testing:: Removing Food Content\n";
 		world.removeRoomContent(room, RoomContent::FOOD);
 	}
 	// Process your move's encounter message
