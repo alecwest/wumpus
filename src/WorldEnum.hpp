@@ -83,8 +83,8 @@ inline Move bestDirectionToTurn(Direction currDir, Direction targetDir) {
 struct ExplorationStats {
 	bool alive = true;
 	bool gameOver = false;
-	int arrowShot = 0;
-	int foodShared = 0;
+	bool arrowShot = false; // TODO assuming one arrow
+	int foodShared = false; // TODO assuming only one food can exist
 	bool goldFound = false;
 	int movesTaken = 0;
 	bool supmuwKilled = false; // TODO assuming one supmuw and wumpus

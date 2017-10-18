@@ -8,7 +8,6 @@ Agent::Agent() {
 	world = AgentWorld(gw);
 	dir = Direction::EAST;
 	room = 0;
-	maxArrows = 1;
 	world.addRoomContent(room, getAgentRoomContent());
 	world.perceptWorld(room);
 }
@@ -17,7 +16,6 @@ Agent::Agent(const GameWorld &gw) {
 	world = AgentWorld(gw);
 	dir = Direction::EAST;
 	room = 0;
-	maxArrows = 1;
 	world.addRoomContent(room, getAgentRoomContent());
 	world.perceptWorld(room);
 }
@@ -84,7 +82,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 		world.addRoomContent(room, RoomContent::AGENT_DEAD);
 	}
 	else if (food_shared) {
-		info.foodShared++;
+		info.foodShared = true;
 		world.removeRoomContent(room, RoomContent::FOOD);
 	}
 	// Process your move's encounter message
@@ -199,38 +197,32 @@ void Agent::exit() {
 }
 
 RoomContent Agent::shoot() {
-	RoomContent objectHit = RoomContent::BUMP;
-	std::vector<int> traveledRooms = std::vector<int>();
-	if (info.arrowShot >= maxArrows){
-		return objectHit;
+	if (info.arrowShot){
+		return RoomContent::BUMP;
 	}
 
-	int r = world.adjacentRoom(room, dir);
-	while(r != -1){
-		traveledRooms.push_back(r);
-		if (world.roomHasContent(r, RoomContent::WUMPUS)) {
-			objectHit = RoomContent::WUMPUS;
-			info.wumpusKilled++;
-			noWumpusRooms = traveledRooms;
-			break;
-		}
-		if (world.roomHasContent(r, RoomContent::SUPMUW_EVIL)) {
-			objectHit= RoomContent::SUPMUW_EVIL;
-			info.supmuwKilled++;
-			noSupmuwRooms = traveledRooms;
-			break;
-		}
-		if (world.roomHasContent(r, RoomContent::SUPMUW)) {
-			objectHit = RoomContent::SUPMUW;
-			info.supmuwKilled++;
-			noSupmuwRooms = traveledRooms;
-			break;
-		}
-		r = world.adjacentRoom(r, dir);
+	RoomContent hit = world.agentShot(room, dir);
+	std::vector<int> traveledRooms = world.getRoomsArrowTraveled();
+	for (auto room : traveledRooms) {
+		world.addInference(room, Inference::WUMPUS_FREE);
+		world.addInference(room, Inference::SUPMUW_FREE);
+		world.addInference(room, Inference::SUPMUW_EVIL_FREE);
 	}
-	info.arrowShot++;
-	std::cout << "Arrow traveled from " << room << " to " << r << std::endl;
-	return objectHit;
+
+	if (hit == RoomContent::WUMPUS) {
+		info.wumpusKilled = true;
+		std::cout << "You hear a piercing scream. You killed the Wumpus!\n";
+	}
+	else if (hit == RoomContent::SUPMUW) {
+		info.supmuwKilled = true;
+		std::cout << "You hear an anguished moo. You killed the Supmuw!\n";
+	}
+	else {
+		std::cout << "Your arrow vanishes into the darkness and nothing is heard.\n";
+	}
+
+	info.arrowShot = true;
+	return hit;
 }
 
 void Agent::gameOver() {

@@ -1,11 +1,5 @@
 10
-Pit
-3
-8
-Pit
-3
-6
-Wumpus
+Supmuw
 3
 8
 Pit
@@ -14,7 +8,7 @@ Pit
 Pit
 2
 2
-Supmuw
+Wumpus
 4
 5
 Pit

@@ -421,14 +421,15 @@ void IntelligentAgent::makeMove() {
 
 		/*
 		 * Priorities:
-		 * 1. Visit friendly Supmuw if closeby TODO ONLY ONCE. IT SEEMS TO BE CONTINUOUSLY GIVING FOOD OUT
+		 * 1. Visit friendly Supmuw if close-by
 		 * 2. Leave if gold is found
-		 * 3. TODO shoot wumpus if location is known
+		 * 3. Shoot wumpus if location is known
 		 * 4. Continue exploring
-		 * 5. Leave if all fringe rooms are unsafe
+		 * 5. TODO Leave if all fringe rooms are unsafe
 		 */
 		if (supmuwRoomFound()
 				and not supmuwEvil
+				and not info.foodShared
 				and std::find(adjRooms.begin(), adjRooms.end(), supmuwRoom) != adjRooms.end()) {
 			goToRoom(supmuwRoom);
 		}
@@ -437,7 +438,6 @@ void IntelligentAgent::makeMove() {
 				moves.push(Move::EXIT);
 			}
 			else {
-				// TODO current implementation seems to want to continue exploring unvisited rooms?
 				// TODO instead of returning the shortest non zero route, return the route that brings us closest to home (distance formula)
 				returnToSafeRoom();
 				// TODO need a better way to get out than just moving as far west and south as possible
@@ -453,7 +453,12 @@ void IntelligentAgent::makeMove() {
 				}
 			}
 		}
-//		if (not world.roomHasContent(room, RoomContent::GLITTER))
+		else if (wumpusRoomFound()
+				and not info.wumpusKilled
+				and std::find(adjRooms.begin(), adjRooms.end(), wumpusRoom) != adjRooms.end()) {
+			faceRoom(wumpusRoom);
+			moves.push(Move::SHOOT);
+		}
 		else {
 			// Find a not yet visited room that is safe
 			for (auto r : adjRooms) {

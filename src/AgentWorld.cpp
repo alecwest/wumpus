@@ -6,13 +6,13 @@
 
 AgentWorld::AgentWorld() : World() {
 	gameWorld = GameWorld();
-	worldProbability = 0.0;
+	roomsArrowTraveled = std::vector<int>();
 }
 
 AgentWorld::AgentWorld(const GameWorld &gw) : World() {
 	gameWorld = gw;
+	roomsArrowTraveled = std::vector<int>();
 	gridSize = gameWorld.getGridSize();
-	worldProbability = 1.0;
 	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(AgentRoom(i, gridSize));
 	}
@@ -169,6 +169,33 @@ bool AgentWorld::roomVisited(int room) {
 
 void AgentWorld::setRoomStatus(int room, RoomStatus rs) {
 	world.at(room).setRoomStatus(rs);
+}
+
+RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
+	int room = adjacentRoom(shootingRoom, directionShot);
+	while (room > -1) {
+		roomsArrowTraveled.push_back(room);
+		// TODO assuming arrow hits SUPMUW before WUMPUS if they're in the same room (to make things a little easier in terms of SUPMUW behavior)
+		if (gameWorld.roomHasContent(room, RoomContent::SUPMUW)) {
+			gameWorld.removeRoomContent(room, RoomContent::SUPMUW);
+			return RoomContent::SUPMUW;
+		}
+		else if (gameWorld.roomHasContent(room, RoomContent::SUPMUW_EVIL)) {
+			gameWorld.removeRoomContent(room, RoomContent::SUPMUW_EVIL);
+			return RoomContent::SUPMUW;
+		}
+		else if (gameWorld.roomHasContent(room, RoomContent::WUMPUS)) {
+			gameWorld.removeRoomContent(room, RoomContent::WUMPUS);
+			return RoomContent::WUMPUS;
+		}
+
+		room = adjacentRoom(shootingRoom, directionShot);
+	}
+	return  RoomContent::BUMP;
+}
+
+std::vector<int> AgentWorld::getRoomsArrowTraveled() {
+	return roomsArrowTraveled;
 }
 
 void AgentWorld::printWorld() {

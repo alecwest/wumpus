@@ -14,7 +14,7 @@ private:
 	std::vector<AgentRoom> world;
 protected:
 	GameWorld gameWorld;
-	int worldProbability;
+	std::vector<int> roomsArrowTraveled;
 	
 public:
 	AgentWorld();
@@ -47,6 +47,11 @@ public:
 	bool roomIsEmpty(int room);
 	void addRoomContent(int room, RoomContent rc);
 	bool removeRoomContent(int room, RoomContent rc);
+	/*
+	 * Returns SUPMUW or WUMPUS if either is shot and BUMP if it hits a wall
+	 */
+	RoomContent agentShot(int shootingRoom, Direction directionShot);
+	std::vector<int> getRoomsArrowTraveled();
 	void printWorld();
 };
 

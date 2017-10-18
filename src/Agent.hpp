@@ -16,9 +16,6 @@ protected:
 	Direction dir;
 	ExplorationStats info;
 	int room;
-	int maxArrows;
-	std::vector<int> noWumpusRooms;
-	std::vector<int> noSupmuwRooms;
 	// TODO does turnLeft and turnRight count as a move? Signs point to yes
 	void turnLeft();
 	void turnRight();
