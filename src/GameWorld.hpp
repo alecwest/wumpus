@@ -15,6 +15,8 @@ class GameWorld : public World
 {
 private:
 	std::vector<GameRoom> world;
+	// Return a random location that does not interfere with the safe space
+	int getRandomLocationForObstacle();
 protected:
 	int numGold;
 	int numSupmuw;

@@ -18,15 +18,17 @@ GameWorld::GameWorld() : World() {
 	// Generate random pit rooms
 	int pitChance;
 	for (auto w : world) {
+		// Don't generate any pits in safe room or it's adjacent rooms
+		if (w.getRoom() == 0 || w.getRoom() == 1 || w.getRoom() == gridSize || w.getRoom() == gridSize + 1) continue;
 		pitChance = std::rand() % 100;
 		if (pitChance < 15) {
 			addToRoom(w.getRoom(), RoomContent::PIT);
 		}
 	}
 	// Generate random Wumpus, Supmuw, and Gold location
-	int wumpusLoc = std::rand() % getNumRooms();
-	int supmuwLoc = std::rand() % getNumRooms();
-	int goldLoc = std::rand() % getNumRooms();
+	int wumpusLoc = getRandomLocationForObstacle();
+	int supmuwLoc = getRandomLocationForObstacle();
+	int goldLoc = getRandomLocationForObstacle();
 	addToRoom(wumpusLoc, RoomContent::WUMPUS);
 	addToRoom(supmuwLoc, RoomContent::SUPMUW);
 	addToRoom(goldLoc, RoomContent::GOLD);
@@ -86,6 +88,14 @@ GameWorld::GameWorld(std::string fileName) : World() {
 }
 
 GameWorld::~GameWorld() {}
+
+int GameWorld::getRandomLocationForObstacle() {
+	int randLoc = std::rand() % getNumRooms();
+	while (randLoc == 0 || randLoc == 1 || randLoc == gridSize || randLoc == gridSize + 1) {
+		randLoc = std::rand() % getNumRooms();
+	}
+	return randLoc;
+}
 
 void GameWorld::addToRoom(int room, RoomContent rc) {
 	if (room < 0 || room > (int)world.size()) {
