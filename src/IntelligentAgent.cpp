@@ -101,6 +101,8 @@ void IntelligentAgent::inferRooms() {
 
 	if (not info.goldFound and world.roomHasContent(room, RoomContent::GLITTER)) {
 		moves.push(Move::GRAB);
+		// Process moves immediately so we can begin finding a path home
+		processMoves();
 	}
 
 	if (world.roomHasContent(room, RoomContent::BREEZE)) {
@@ -423,9 +425,9 @@ void IntelligentAgent::makeMove() {
 		 * Priorities:
 		 * 1. Visit friendly Supmuw if close-by
 		 * 2. Leave if gold is found
-		 * 3. Shoot wumpus if location is known
+		 * 3. Shoot wumpus if location is known // TODO should we immediately visit the room if it's adj, fringe, and wumpus/supmuw is dead?
 		 * 4. Continue exploring
-		 * 5. TODO Leave if all fringe rooms are unsafe
+		 * 5. Leave if all fringe rooms are unsafe
 		 */
 		if (supmuwRoomFound()
 				and not supmuwEvil
@@ -477,7 +479,9 @@ void IntelligentAgent::makeMove() {
 			}
 			// If no move was determined, double back to the previous room
 			if (moves.size() == 0) {
-				goBack(1);
+//				goBack(1);
+				returnToSafeRoom();
+				moves.push(Move::EXIT);
 			}
 		}
 
