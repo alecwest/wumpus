@@ -63,8 +63,12 @@ GameWorld::GameWorld(std::string fileName) : World() {
 		getline(file, line);
 		locY = atoi(line.c_str());
 
-		if (locX == 0 && locY == 0) {
-			continue; // Skip any that try to place something in the first square
+		// TODO assume that pit, wumpus, gold, and supmuw cannot be placed in lower right 2x2, to prevent impossible game or too-easy game
+		if ((locX == 0 && locY == 0)
+				|| (locX == 0 && locY == 1)
+				|| (locX == 1 && locY == 0)
+				|| (locX == 1 && locY == 1)) {
+			continue; // Skip any that try to place something in or adjacent to the safe square
 		}
 		else if (content.find("Pit") != std::string::npos) {
 //			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
