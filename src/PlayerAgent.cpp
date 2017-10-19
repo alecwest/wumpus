@@ -3,9 +3,9 @@
 
 #include "PlayerAgent.hpp"
 
-PlayerAgent::PlayerAgent() : Agent() {}
+PlayerAgent::PlayerAgent() : Agent() {printFrequency = 3;}
 
-PlayerAgent::PlayerAgent(const GameWorld &gw) : Agent(gw) {}
+PlayerAgent::PlayerAgent(const GameWorld &gw) : Agent(gw) {printFrequency = 3;}
 
 PlayerAgent::~PlayerAgent() {}
 

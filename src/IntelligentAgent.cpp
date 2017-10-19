@@ -25,15 +25,16 @@ void IntelligentAgent::processMoves() {
 	while (!moves.empty() && !info.gameOver) {
 		Move move = moves.front();
 		moves.pop();
+		std::string message = "";
 		switch(move) {
-		case Move::FORWARD: std::cout << "Moving forward\n"; forward(); break;
-		case Move::LEFT: std::cout << "Turning left\n"; turnLeft(); break;
-		case Move::RIGHT: std::cout << "Turning right\n"; turnRight(); break;
-		case Move::GRAB: std::cout << "Grabbing\n"; grab(); break;
-		case Move::SHOOT: std::cout << "Shooting\n"; shoot(); break;
-		case Move::EXIT: std::cout << "Exiting\n"; exit(); break;
+		case Move::FORWARD: if (printFrequency > 0) std::cout << "Moving forward\n"; forward(); break;
+		case Move::LEFT: if (printFrequency > 0) std::cout << "Turning left\n"; turnLeft(); break;
+		case Move::RIGHT: if (printFrequency > 0) std::cout << "Turning right\n"; turnRight(); break;
+		case Move::GRAB: if (printFrequency > 0) std::cout << "Grabbing\n"; grab(); break;
+		case Move::SHOOT: if (printFrequency > 0) std::cout << "Shooting\n"; shoot(); break;
+		case Move::EXIT: if (printFrequency > 0) std::cout << "Exiting\n"; exit(); break;
 		}
-		printWorld();
+		if (printFrequency > 1 || info.gameOver) printWorld();
 	}
 }
 
@@ -119,7 +120,7 @@ void IntelligentAgent::inferRooms() {
 		}
 	}
 
-	if (world.roomHasContent(room, RoomContent::BUMP)) { // TODO assuming agent knows the grid is a square, but not the size of it until it hits the edge (I don't think I'm assuming this anymore...lol)
+	if (world.roomHasContent(room, RoomContent::BUMP)) {
 		int r = room;
 		markRoom(r, Inference::BLOCKADE);
 	}
@@ -369,7 +370,7 @@ void IntelligentAgent::returnToSafeRoom() {
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
 	int numAdjChecked;
-	printWorld();
+	if (printFrequency > 1) printWorld();
 	while (!info.gameOver) {
 		numAdjChecked = 0;
 		adjRooms = world.adjacentRooms(room);
@@ -438,7 +439,7 @@ void IntelligentAgent::makeMove() {
 		}
 
 		processMoves();
-		getchar();
+		if (printFrequency == 3) getchar();
 	}
 	gameOver();
 }

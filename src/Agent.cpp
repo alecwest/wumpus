@@ -10,6 +10,7 @@ Agent::Agent() {
 	room = 0;
 	world.addRoomContent(room, getAgentRoomContent());
 	world.perceptWorld(room);
+	printFrequency = 0;
 }
 
 Agent::Agent(const GameWorld &gw) {
@@ -18,6 +19,7 @@ Agent::Agent(const GameWorld &gw) {
 	room = 0;
 	world.addRoomContent(room, getAgentRoomContent());
 	world.perceptWorld(room);
+	printFrequency = 0;
 }
 
 Agent::~Agent() {}
@@ -81,6 +83,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	// If attacked or fell in a PIT not occupied by SUPMUW, agent is dead
 	if (wumpus_attack || supmuw_attack || (pit_exists && !supmuw_exists)) {
 		info.alive = false;
+		info.gameOver = true;
 		world.removeRoomContent(room, getAgentRoomContent());
 		world.addRoomContent(room, RoomContent::AGENT_DEAD);
 	}
@@ -88,6 +91,10 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 		info.foodShared = true;
 		world.removeRoomContent(room, RoomContent::FOOD);
 	}
+
+	// Skip encounter message depending on print frequency
+	if (printFrequency == 0) return;
+
 	// Process your move's encounter message
 	if (breeze_felt) {
 		message += "You feel a cold chill. Where is it coming from?\n";
@@ -124,7 +131,6 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	else if (message.length() == 0){
 		message = "This room seems clear...\n";
 	}
-	if (!info.alive) info.gameOver = true;
 	std::cout << message;
 }
 
@@ -179,7 +185,6 @@ void Agent::forward() {
 		world.addRoomContent(room, RoomContent::BUMP);
 		processPerception(world.perceptWorld(room));
 		world.removeRoomContent(room, RoomContent::BUMP);
-		// TODO add assumption that a bump counts as a move taken.
 		return;
 	}
 	else {
@@ -234,6 +239,11 @@ RoomContent Agent::shoot() {
 void Agent::gameOver() {
 	info.gameOver = true;
 	std::cout << "Game Over!" << std::endl << "Your score: " << calculateScore() << std::endl;
+}
+
+void Agent::setPrintFrequency(int freq) {
+	if (freq < 0 || freq > 3) return;
+	printFrequency = freq;
 }
 
 RoomContent Agent::getAgentRoomContent() {

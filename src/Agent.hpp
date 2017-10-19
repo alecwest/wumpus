@@ -16,6 +16,7 @@ protected:
 	Direction dir;
 	ExplorationStats info;
 	int room;
+	int printFrequency;
 	void turnLeft();
 	void turnRight();
 	void forward();
@@ -29,6 +30,8 @@ public:
 	int calculateScore();
 	void printWorld();
 	void gameOver();
+	// 0 = final result only, 1 = final result and text walkthrough, 2 = everything without stopping, 3 = everything with getchar() pause
+	void setPrintFrequency(int freq);
 	virtual void makeMove() = 0;
 private:
 	RoomContent getAgentRoomContent();

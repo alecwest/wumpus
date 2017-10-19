@@ -173,7 +173,6 @@ void AgentWorld::setRoomStatus(int room, RoomStatus rs) {
 RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
 	int room = adjacentRoom(shootingRoom, directionShot);
 	while (room > -1) {
-		// TODO assuming arrow hits SUPMUW before WUMPUS if they're in the same room (to make things a little easier in terms of SUPMUW behavior)
 		if (gameWorld.roomHasContent(room, RoomContent::SUPMUW)) {
 			gameWorld.removeRoomContent(room, RoomContent::SUPMUW);
 			return RoomContent::SUPMUW;

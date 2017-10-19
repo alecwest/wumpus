@@ -13,10 +13,18 @@
 
 int main() {
 	srand(time(NULL));
-	GameWorld gw = GameWorld("../test.txt");
-//	GameWorld gw = GameWorld();
+
+	// Init world
+//	GameWorld gw = GameWorld("../in.txt"); // Text file generation
+	GameWorld gw = GameWorld(); // Random terrain generation
+
+	// Init player
 //	PlayerAgent a = PlayerAgent(gw);
 	IntelligentAgent a = IntelligentAgent(gw);
+
+	// 0 = final result only, 1 = final result and text walkthrough, 2 = everything without stopping, 3 = everything with getchar() pause
+	a.setPrintFrequency(2);
+
 	gw.printWorld();
 	a.makeMove();
 	return 0;
