@@ -10,7 +10,6 @@ CPP_SRCS += \
 ../src/GameRoom.cpp \
 ../src/GameWorld.cpp \
 ../src/IntelligentAgent.cpp \
-../src/KnowledgeBase.cpp \
 ../src/NullRoom.cpp \
 ../src/PlayerAgent.cpp \
 ../src/Room.cpp \
@@ -24,7 +23,6 @@ OBJS += \
 ./src/GameRoom.o \
 ./src/GameWorld.o \
 ./src/IntelligentAgent.o \
-./src/KnowledgeBase.o \
 ./src/NullRoom.o \
 ./src/PlayerAgent.o \
 ./src/Room.o \
@@ -38,7 +36,6 @@ CPP_DEPS += \
 ./src/GameRoom.d \
 ./src/GameWorld.d \
 ./src/IntelligentAgent.d \
-./src/KnowledgeBase.d \
 ./src/NullRoom.d \
 ./src/PlayerAgent.d \
 ./src/Room.d \

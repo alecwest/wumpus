@@ -25,5 +25,4 @@ CPP_DEPS :=
 SUBDIRS := \
 Debug/src \
 src \
-src/fol \
 

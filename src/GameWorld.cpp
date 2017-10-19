@@ -6,7 +6,7 @@
 GameWorld::GameWorld() : World() {
 	// Default grid size is 10
 	gridSize = 10;
-	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
+	for (int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(GameRoom(i, gridSize));
 	}
 
@@ -46,7 +46,7 @@ GameWorld::GameWorld(std::string fileName) : World() {
 	// Get gridSize
 	getline(file, line);
 	gridSize = atoi(line.c_str());
-	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
+	for (int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(GameRoom(i, gridSize));
 	}
 

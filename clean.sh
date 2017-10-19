@@ -1,5 +1,4 @@
 #!/bin/sh
 
-rm *.o
-cd Default
-make clean
+rm Default/src/*.o
+rm Default/src/*.d

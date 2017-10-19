@@ -11,7 +11,7 @@ AgentWorld::AgentWorld() : World() {
 AgentWorld::AgentWorld(const GameWorld &gw) : World() {
 	gameWorld = gw;
 	gridSize = gameWorld.getGridSize();
-	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
+	for (int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(AgentRoom(i, gridSize));
 	}
 }

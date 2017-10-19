@@ -439,7 +439,10 @@ void IntelligentAgent::makeMove() {
 		}
 
 		processMoves();
-		if (printFrequency == 3) getchar();
+		if (printFrequency == 3) {
+			std::cout << "Press enter to continue...";
+			getchar();
+		}
 	}
 	gameOver();
 }
