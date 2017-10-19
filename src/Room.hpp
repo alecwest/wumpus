@@ -32,6 +32,7 @@ public:
 	void addRoomContent(RoomContent rc);
 	bool removeRoomContent(RoomContent rc); // return true if successful
 	bool hasContent(RoomContent rc);
+	bool roomBlockaded();
 	bool roomEmpty();
 };
 

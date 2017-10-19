@@ -9,7 +9,6 @@
 #include <queue>
 
 #include "Agent.hpp"
-#include "KnowledgeBase.hpp"
 
 class IntelligentAgent : public Agent
 {

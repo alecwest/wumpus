@@ -51,7 +51,10 @@ bool Room::hasAdjacent(Direction dir) {
 }
 
 void Room::addRoomContent(RoomContent rc) {
-	if (!hasContent(rc))
+	if (rc == RoomContent::BLOCKADE) {
+		content.clear();
+	}
+	if (!hasContent(rc) && !hasContent(RoomContent::BLOCKADE))
 		content.push_back(rc);
 }
 
@@ -82,6 +85,10 @@ std::vector<RoomContent> Room::getRoomContent() {
 
 bool Room::hasContent(RoomContent rc) {
 	return std::find(content.begin(), content.end(), rc) != content.end();
+}
+
+bool Room::roomBlockaded() {
+	return std::find(content.begin(), content.end(), RoomContent::BLOCKADE) != content.end();
 }
 
 bool Room::roomEmpty() {

@@ -29,7 +29,6 @@ std::vector<Inference> AgentRoom::getInferences() {
 void AgentRoom::addInference(Inference i) {
 	if (!hasInference(i)){
 		switch(i) {
-		// TODO remove this cout
 		case Inference::PIT_FREE: removeInference(Inference::CONTAINS_PIT); break;
 		case Inference::SUPMUW_EVIL_FREE: removeInference(Inference::CONTAINS_SUPMUW_EVIL); break;
 		case Inference::SUPMUW_FREE: removeInference(Inference::CONTAINS_SUPMUW); break;
@@ -53,7 +52,6 @@ bool AgentRoom::hasInference(Inference i) {
 }
 
 bool AgentRoom::safeUnvisitedRoom() {
-	// TODO should a room that contains the supmuw be considered safe?
 	return (status != RoomStatus::VISITED
 		 && !hasInference(Inference::CONTAINS_PIT)
 		 && !hasInference(Inference::CONTAINS_SUPMUW_EVIL)
@@ -61,8 +59,8 @@ bool AgentRoom::safeUnvisitedRoom() {
 }
 
 bool AgentRoom::safeRoom() {
-	// TODO should a room that contains the supmuw be considered safe?
-	return (getRoomStatus() == RoomStatus::VISITED)
+	return (getRoomStatus() == RoomStatus::VISITED
+			&& !roomBlockaded())
 			|| (!hasInference(Inference::CONTAINS_PIT)
 					&& !hasInference(Inference::CONTAINS_SUPMUW_EVIL)
 					&& !hasInference(Inference::CONTAINS_WUMPUS));

@@ -16,7 +16,6 @@ protected:
 	Direction dir;
 	ExplorationStats info;
 	int room;
-	// TODO does turnLeft and turnRight count as a move? Signs point to yes
 	void turnLeft();
 	void turnRight();
 	void forward();

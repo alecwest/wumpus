@@ -17,10 +17,7 @@ private:
 	std::vector<GameRoom> world;
 	// Return a random location that does not interfere with the safe space
 	int getRandomLocationForObstacle();
-protected:
-	int numGold;
-	int numSupmuw;
-	int numWumpus;
+	void removeRoomContentAndDependents(int room, RoomContent rc, RoomContent dep);
 public:
 	GameWorld();
 	GameWorld(std::string fileName);
@@ -33,6 +30,7 @@ public:
 	Room getRoom(int room);
 	int getNumRooms();
 	bool roomHasContent(int room, RoomContent rc);
+	bool roomBlockaded(int room);
 	void addRoomContent(int room, RoomContent rc);
 	bool removeRoomContent(int room, RoomContent rc);
 	void printWorld();

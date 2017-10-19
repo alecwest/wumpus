@@ -29,6 +29,7 @@ public:
 	virtual std::vector<int> allAdjacentRooms(int room) = 0;
 	virtual Room getRoom(int room) = 0;
 	virtual bool roomHasContent(int room, RoomContent rc) = 0;
+	virtual bool roomBlockaded(int room) = 0;
 	virtual void addRoomContent(int room, RoomContent rc) = 0;
 	virtual bool removeRoomContent(int room, RoomContent rc) = 0;
 	virtual void printWorld() = 0;

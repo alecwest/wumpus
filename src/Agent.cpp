@@ -48,13 +48,13 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	bool stench_smelled = false;
 	bool glitter_seen = false;
 	bool bump_felt = false;
+	bool blockade_hit = false;
 	std::string message = "";
 	for (auto c : rc) {
 		switch (c) {
 		case RoomContent::WUMPUS:
 			wumpus_attack = true; break;
 		case RoomContent::SUPMUW_EVIL:
-			std::cout << "Testing:: SUPMUW IS EVIL\n";
 			supmuw_attack = true; break;
 		case RoomContent::SUPMUW:
 			supmuw_exists = true; break;
@@ -72,6 +72,8 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 			glitter_seen = true; break;
 		case RoomContent::BUMP:
 			bump_felt = true; break;
+		case RoomContent::BLOCKADE:
+			blockade_hit = true; break;
 		default:
 			break;
 		}
@@ -101,6 +103,9 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	}
 	if (bump_felt) {
 		message += "You ran into a wall. Don't do that again.\n";
+	}
+	if (blockade_hit) {
+		message += "You ran into a blockade. Who put that there?\n";
 	}
 	if (supmuw_exists) {
 		message += "You encounter a Supmuw. He seems friendly.\n";
@@ -169,19 +174,25 @@ void Agent::turnRight() {
 
 void Agent::forward() {
 	int nextRoom = world.adjacentRoom(room, dir);
+	info.movesTaken++;
 	if (nextRoom < 0) {
 		world.addRoomContent(room, RoomContent::BUMP);
 		processPerception(world.perceptWorld(room));
 		world.removeRoomContent(room, RoomContent::BUMP);
-		info.movesTaken++; // TODO add assumption that a bump counts as a move taken.
+		// TODO add assumption that a bump counts as a move taken.
 		return;
 	}
-	RoomContent agentDirection = getAgentRoomContent();
-	world.removeRoomContent(room, agentDirection);
-	world.addRoomContent(nextRoom, agentDirection);
-	room = nextRoom;
-	info.movesTaken++;
-	processPerception(world.perceptWorld(room));
+	else {
+		processPerception(world.perceptWorld(nextRoom));
+		if (world.roomBlockaded(nextRoom)) {
+			world.setRoomStatus(nextRoom, RoomStatus::VISITED);
+			return;
+		}
+		RoomContent agentDirection = getAgentRoomContent();
+		world.removeRoomContent(room, agentDirection);
+		world.addRoomContent(nextRoom, agentDirection);
+		room = nextRoom;
+	}
 }
 
 void Agent::grab() {
@@ -193,7 +204,7 @@ void Agent::grab() {
 
 void Agent::exit() {
 	if (room == info.safeRoom) {
-		gameOver();
+		info.gameOver = true;
 	}
 }
 
@@ -203,12 +214,6 @@ RoomContent Agent::shoot() {
 	}
 
 	RoomContent hit = world.agentShot(room, dir);
-	std::vector<int> traveledRooms = world.getRoomsArrowTraveled();
-	for (auto room : traveledRooms) {
-		world.addInference(room, Inference::WUMPUS_FREE);
-		world.addInference(room, Inference::SUPMUW_FREE);
-		world.addInference(room, Inference::SUPMUW_EVIL_FREE);
-	}
 
 	if (hit == RoomContent::WUMPUS) {
 		info.wumpusKilled = true;

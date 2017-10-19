@@ -14,27 +14,26 @@ private:
 	std::vector<AgentRoom> world;
 protected:
 	GameWorld gameWorld;
-	std::vector<int> roomsArrowTraveled;
 	
 public:
 	AgentWorld();
 	AgentWorld(const GameWorld &gw);
 	virtual ~AgentWorld();
-//	AgentWorld* clone(); // TODO remove this?
-	// RoomContent should include dead agent and regular supmuw and evil supmuw (evil supmuw not necessary if agent is dead?)
-	// RoomContent should include a piece of food if supmuw not near wumpus (is normal wumpus) and not in a pit
-	// If supmuw is in a pit, then no food will be left out and the pit is harmless
-	// If wumpus is in a pit, it is still harmful, and if supmuw smells wumpus while in pit, it becomes harmful as well
-	// If supmuw has food, all 8 adjacent rooms are wumpus-free
-	std::vector<RoomContent> perceptWorld(int room); // Returns implementation of [none, none, none, none, ...] as described in class powerpoints
+	// Returns collection of physical objects and sensations perceived in this room
+	std::vector<RoomContent> perceptWorld(int room);
+	// Returns room number for specified direction, or -1 if no room exists
 	int adjacentRoom(int room, Direction dir);
+	// Returns collection of existing adjacent rooms
 	std::vector<int> adjacentRooms(int room);
+	// Returns collection of diagonally adjacent rooms
 	std::vector<int> adjacentDiagonalRooms(int room);
+	// Returns collection of both orthogonal and diagonally adjacent rooms
 	std::vector<int> allAdjacentRooms(int room);
 	std::vector<Inference> getInferences(int room);
 	void addInference(int room, Inference i);
 	void removeInference(int room, Inference i);
 	bool hasInference(int room, Inference i);
+	// Returns true if inferences imply safety in the unvisited room
 	bool safeUnvisitedRoom(int room);
 	// Returns true if room is safe, but not necessarily visited
 	bool safeRoom(int room);
@@ -44,14 +43,16 @@ public:
 	void setRoomStatus(int room, RoomStatus rs);
 	RoomStatus getRoomStatus(int room);
 	bool roomHasContent(int room, RoomContent rc);
+	bool roomBlockaded(int room);
 	bool roomIsEmpty(int room);
+	// Add content to the agent's perception of the world
 	void addRoomContent(int room, RoomContent rc);
+	// Remove content from the agent's perception of the world
 	bool removeRoomContent(int room, RoomContent rc);
 	/*
-	 * Returns SUPMUW or WUMPUS if either is shot and BUMP if it hits a wall
+	 * Returns SUPMUW or WUMPUS if either is shot and BUMP if it hits a wall or BLOCKADE
 	 */
 	RoomContent agentShot(int shootingRoom, Direction directionShot);
-	std::vector<int> getRoomsArrowTraveled();
 	void printWorld();
 };
 

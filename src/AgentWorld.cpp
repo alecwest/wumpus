@@ -6,12 +6,10 @@
 
 AgentWorld::AgentWorld() : World() {
 	gameWorld = GameWorld();
-	roomsArrowTraveled = std::vector<int>();
 }
 
 AgentWorld::AgentWorld(const GameWorld &gw) : World() {
 	gameWorld = gw;
-	roomsArrowTraveled = std::vector<int>();
 	gridSize = gameWorld.getGridSize();
 	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(AgentRoom(i, gridSize));
@@ -20,10 +18,6 @@ AgentWorld::AgentWorld(const GameWorld &gw) : World() {
 
 AgentWorld::~AgentWorld() {
 }
-
-// TODO remove this?
-//AgentWorld* AgentWorld::clone() {
-//}
 
 std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	Room currentRoom = gameWorld.getRoom(room);
@@ -119,6 +113,11 @@ bool AgentWorld::roomHasContent(int room, RoomContent rc) {
 	return getRoom(room).hasContent(rc);
 }
 
+bool AgentWorld::roomBlockaded(int room) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return getRoom(room).roomBlockaded();
+}
+
 bool AgentWorld::roomIsEmpty(int room) {
 	if (room < 0 || room > getNumRooms()) return false;
 	return getRoom(room).roomEmpty();
@@ -174,7 +173,6 @@ void AgentWorld::setRoomStatus(int room, RoomStatus rs) {
 RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
 	int room = adjacentRoom(shootingRoom, directionShot);
 	while (room > -1) {
-		roomsArrowTraveled.push_back(room);
 		// TODO assuming arrow hits SUPMUW before WUMPUS if they're in the same room (to make things a little easier in terms of SUPMUW behavior)
 		if (gameWorld.roomHasContent(room, RoomContent::SUPMUW)) {
 			gameWorld.removeRoomContent(room, RoomContent::SUPMUW);
@@ -188,14 +186,13 @@ RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
 			gameWorld.removeRoomContent(room, RoomContent::WUMPUS);
 			return RoomContent::WUMPUS;
 		}
+		else if (gameWorld.roomHasContent(room, RoomContent::BLOCKADE)) {
+			return RoomContent::BUMP;
+		}
 
 		room = adjacentRoom(shootingRoom, directionShot);
 	}
 	return  RoomContent::BUMP;
-}
-
-std::vector<int> AgentWorld::getRoomsArrowTraveled() {
-	return roomsArrowTraveled;
 }
 
 void AgentWorld::printWorld() {
@@ -208,64 +205,78 @@ void AgentWorld::printWorld() {
 	for (int i = world.size() - gridSize; i >= 0; i -= gridSize) {
 		// First line prints physical objects
 		for (int j = 0; j < gridSize; j++) {
-			std::cout << "|" <<
-						 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
-						 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
-					     (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
-			if(roomHasContent(i + j, RoomContent::SUPMUW)) {
-				std::cout << "S" <<
-							 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
-				// Food should only exist in room if SUPMUW does
-			}
-			else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
-				std::cout << "E ";
+			if (roomBlockaded(i + j)) {
+				std::cout << "|XXXXXXXX";
 			}
 			else {
-				std::cout << "  ";
+				std::cout << "|" <<
+							 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
+							 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
+							 (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
+				if(roomHasContent(i + j, RoomContent::SUPMUW)) {
+					std::cout << "S" <<
+								 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
+					// Food should only exist in room if SUPMUW does
+				}
+				else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
+					std::cout << "E ";
+				}
+				else {
+					std::cout << "  ";
+				}
 			}
 		}
 		std::cout << "|" << std::endl;
 		// Second line prints sensations
 		for (int j = 0; j < gridSize; j++) {
-			std::cout << "|" <<
-						 (roomHasContent(i + j, RoomContent::BREEZE) ? " B" : "  ") <<
-						 (roomHasContent(i + j, RoomContent::GLITTER) ? " G" : "  ") <<
-						 (roomHasContent(i + j, RoomContent::MOO) ? " M" : "  ") <<
-						 (roomHasContent(i + j, RoomContent::STENCH) ? " S" : "  ");
+			if (roomBlockaded(i + j)) {
+				std::cout << "|XXXXXXXX";
+			}
+			else {
+				std::cout << "|" <<
+							 (roomHasContent(i + j, RoomContent::BREEZE) ? " B" : "  ") <<
+							 (roomHasContent(i + j, RoomContent::GLITTER) ? " G" : "  ") <<
+							 (roomHasContent(i + j, RoomContent::MOO) ? " M" : "  ") <<
+							 (roomHasContent(i + j, RoomContent::STENCH) ? " S" : "  ");
+			}
 		}
 		std::cout << "|" << std::endl;
 		// Third line prints the agent and the room status
 		for (int j = 0; j < gridSize; j++) {
-			rs = getRoomStatus(i + j);
-			std::cout << "|";
-			if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
-				std::cout << "   ^^  ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
-				std::cout << "   >>  ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
-				std::cout << "   vv  ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
-				std::cout << "   <<  ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_DEAD)) {
-				std::cout << "  RIP  ";
+			if (roomBlockaded(i + j)) {
+				std::cout << "|XXXXXXXX";
 			}
 			else {
-				std::cout << "       ";
+				rs = getRoomStatus(i + j);
+				std::cout << "|";
+				if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
+					std::cout << "   ^^  ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
+					std::cout << "   >>  ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
+					std::cout << "   vv  ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
+					std::cout << "   <<  ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_DEAD)) {
+					std::cout << "  RIP  ";
+				}
+				else {
+					std::cout << "       ";
+				}
+				if (rs == RoomStatus::VISITED) {
+					std::cout << "*";
+				}
+				else if (rs == RoomStatus::FRINGE) {
+					std::cout << "?";
+				}
+				else {
+					std::cout << " ";
+				}
 			}
-			if (rs == RoomStatus::VISITED) {
-				std::cout << "*";
-			}
-			else if (rs == RoomStatus::FRINGE) {
-				std::cout << "?";
-			}
-			else {
-				std::cout << " ";
-			}
-
 		}
 		std::cout << "|" << std::endl;
 

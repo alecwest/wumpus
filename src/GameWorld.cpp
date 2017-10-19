@@ -4,27 +4,26 @@
 #include "GameWorld.hpp"
 
 GameWorld::GameWorld() : World() {
-	// Init values
-	numGold = 0;
-	numSupmuw = 0;
-	numWumpus = 0;
-
 	// Default grid size is 10
 	gridSize = 10;
 	for (unsigned int i = 0; i < gridSize * gridSize; i++) {
 		world.push_back(GameRoom(i, gridSize));
 	}
 
-	// Generate random pit rooms
-	int pitChance;
+	// Generate random pit and blockade rooms
+	int chance;
 	for (auto w : world) {
 		// Don't generate any pits in safe room or it's adjacent rooms
 		if (w.getRoom() == 0 || w.getRoom() == 1 || w.getRoom() == gridSize || w.getRoom() == gridSize + 1) continue;
-		pitChance = std::rand() % 100;
-		if (pitChance < 15) {
+		chance = std::rand() % 100;
+		if (chance < 15) {
 			addToRoom(w.getRoom(), RoomContent::PIT);
 		}
+		if (chance > 85) {
+			addToRoom(w.getRoom(), RoomContent::BLOCKADE);
+		}
 	}
+
 	// Generate random Wumpus, Supmuw, and Gold location
 	int wumpusLoc = getRandomLocationForObstacle();
 	int supmuwLoc = getRandomLocationForObstacle();
@@ -43,11 +42,6 @@ GameWorld::GameWorld(std::string fileName) : World() {
 	if (!file.is_open()) {
 		std::cout << "Could not open file";
 	}
-
-	// Init values
-	numGold = 0;
-	numSupmuw = 0;
-	numWumpus = 0;
 
 	// Get gridSize
 	getline(file, line);
@@ -69,6 +63,10 @@ GameWorld::GameWorld(std::string fileName) : World() {
 				|| (locX == 1 && locY == 0)
 				|| (locX == 1 && locY == 1)) {
 			continue; // Skip any that try to place something in or adjacent to the safe square
+		}
+		else if (content.find("Blockade") != std::string::npos) {
+//			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
+			addToRoom(locX * gridSize + locY, RoomContent::BLOCKADE);
 		}
 		else if (content.find("Pit") != std::string::npos) {
 //			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
@@ -102,20 +100,15 @@ int GameWorld::getRandomLocationForObstacle() {
 }
 
 void GameWorld::addToRoom(int room, RoomContent rc) {
-	if (room < 0 || room > (int)world.size()) {
-		return; // Ignore attempts to place content outside of boundaries
+	if (room < 0 || room > (int)world.size() || roomHasContent(room, RoomContent::BLOCKADE)) {
+		return; // Ignore attempts to place content outside of boundaries or in blockades
 	}
 	std::vector<int> adjRooms = adjacentRooms(room);
-	std::vector<int> diagRooms = adjacentDiagonalRooms(room);
-	std::vector<int> allRooms;
-	allRooms.reserve( adjRooms.size() + diagRooms.size() + 1); // preallocate memory
-	allRooms.insert( allRooms.end(), adjRooms.begin(), adjRooms.end() );
-	allRooms.insert( allRooms.end(), diagRooms.begin(), diagRooms.end() );
-	allRooms.push_back(room);
+	std::vector<int> allRooms = allAdjacentRooms(room);
+
 	switch(rc) {
 	case RoomContent::GOLD:
 		addRoomContent(room, RoomContent::GLITTER);
-		numGold++;
 		break;
 	case RoomContent::PIT:
 		if (roomHasContent(room, RoomContent::SUPMUW)) {
@@ -140,7 +133,6 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 		}
 		addToAdjacentRooms(room, RoomContent::MOO);
 		addToAdjacentDiagonalRooms(room, RoomContent::MOO);
-		numSupmuw++;
 		break;
 	case RoomContent::WUMPUS:
 		// If SUPMUW is nearby, turn it evil and remove any food it may have been offering
@@ -151,28 +143,45 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 				addRoomContent(r, RoomContent::SUPMUW_EVIL);
 			}
 		}
-		// If a PIT exists in this room, remove it and any BREEZE only associated with it.
-		if (roomHasContent(room, RoomContent::PIT)) {
-			// TODO assuming Wumpus addition trumps pit addition
-			removeRoomContent(room, RoomContent::PIT);
-			for (auto r : adjRooms) {
-				bool keepBreeze = false;
-				for (auto ar : adjacentRooms(r)) {
-					if (roomHasContent(ar, RoomContent::PIT)) {
-						keepBreeze = true;
-						break;
-					}
-				}
-				if (not keepBreeze) removeRoomContent(r, RoomContent::BREEZE);
-			}
-		}
+		// TODO assuming Wumpus addition trumps pit addition
+		removeRoomContentAndDependents(room, RoomContent::PIT, RoomContent::BREEZE);
 		addToAdjacentRooms(room, RoomContent::STENCH);
-		numWumpus++;
+		break;
+	case RoomContent::BLOCKADE:
+		// TODO assume Blockade trumps anything else and deletes all content in the room
+		removeRoomContentAndDependents(room, RoomContent::PIT, RoomContent::BREEZE);
+		removeRoomContentAndDependents(room, RoomContent::WUMPUS, RoomContent::STENCH);
+		removeRoomContentAndDependents(room, RoomContent::SUPMUW, RoomContent::MOO);
+		removeRoomContentAndDependents(room, RoomContent::SUPMUW_EVIL, RoomContent::MOO);
+		removeRoomContent(room, RoomContent::FOOD);
+		removeRoomContent(room, RoomContent::GLITTER);
+		removeRoomContent(room, RoomContent::GOLD);
+		addRoomContent(room, RoomContent::BLOCKADE);
 		break;
 	default:
 		break;
 	}
 	world.at(room).addRoomContent(rc);
+}
+
+void GameWorld::removeRoomContentAndDependents(int room, RoomContent rc, RoomContent dep) {
+	std::vector<int> adjRooms;
+	if (dep == RoomContent::MOO) adjRooms = allAdjacentRooms(room);
+	else adjRooms = adjacentRooms(room);
+	// If rc exists in this room, remove it and any adjacency only associated with it.
+	if (roomHasContent(room, rc)) {
+		removeRoomContent(room, rc);
+		for (auto r : adjRooms) {
+			bool keepDep = false;
+			for (auto ar : adjacentRooms(r)) {
+				if (roomHasContent(ar, dep)) {
+					keepDep = true;
+					break;
+				}
+			}
+			if (not keepDep) removeRoomContent(r, dep);
+		}
+	}
 }
 
 void GameWorld::addToAdjacentRooms(int room, RoomContent rc) {
@@ -268,6 +277,10 @@ bool GameWorld::roomHasContent(int room, RoomContent rc) {
 	return getRoom(room).hasContent(rc);
 }
 
+bool GameWorld::roomBlockaded(int room) {
+	return getRoom(room).roomBlockaded();
+}
+
 void GameWorld::addRoomContent(int room, RoomContent rc) {
 	world.at(room).addRoomContent(rc);
 }
@@ -286,49 +299,65 @@ void GameWorld::printWorld() {
 	for (int i = world.size() - gridSize; i >= 0; i -= gridSize) {
 		// First line prints physical objects
 		for (int j = 0; j < gridSize; j++) {
-			std::cout << "|" <<
-						 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
-						 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
-						 (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
-			if(roomHasContent(i + j, RoomContent::SUPMUW)) {
-				std::cout << "S" <<
-							 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
-				// Food should only exist in room if SUPMUW does
-			}
-			else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
-				std::cout << "E ";
+			if (roomBlockaded(i + j)) {
+				std::cout << "|XXXXXXXX";
 			}
 			else {
-				std::cout << "  ";
+
+				std::cout << "|" <<
+							 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
+							 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
+							 (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
+				if(roomHasContent(i + j, RoomContent::SUPMUW)) {
+					std::cout << "S" <<
+								 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
+					// Food should only exist in room if SUPMUW does
+				}
+				else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
+					std::cout << "E ";
+				}
+				else {
+					std::cout << "  ";
+				}
 			}
 		}
 		std::cout << "|" << std::endl;
 		// Second line prints sensations
 		for (int j = 0; j < gridSize; j++) {
-			std::cout << "|" <<
-						 (world.at(i + j).hasContent(RoomContent::BREEZE) ? " B" : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::GLITTER) ? " G" : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::MOO) ? " M" : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::STENCH) ? " S" : "  ");
+			if (roomBlockaded(i + j)) {
+				std::cout << "|XXXXXXXX";
+			}
+			else {
+				std::cout << "|" <<
+							(world.at(i + j).hasContent(RoomContent::BREEZE) ? " B" : "  ") <<
+							(world.at(i + j).hasContent(RoomContent::GLITTER) ? " G" : "  ") <<
+							(world.at(i + j).hasContent(RoomContent::MOO) ? " M" : "  ") <<
+							(world.at(i + j).hasContent(RoomContent::STENCH) ? " S" : "  ");
+			}
 		}
 		std::cout << "|" << std::endl;
 		// Third line prints the agent
 		for (int j = 0; j < gridSize; j++) {
 			std::cout << "|";
-			if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
-				std::cout << "   ^^   ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
-				std::cout << "   >>   ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
-				std::cout << "   vv   ";
-			}
-			else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
-				std::cout << "   <<   ";
+			if (roomBlockaded(i + j)) {
+				std::cout << "XXXXXXXX";
 			}
 			else {
-				std::cout << "        ";
+				if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
+					std::cout << "   ^^   ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
+					std::cout << "   >>   ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
+					std::cout << "   vv   ";
+				}
+				else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
+					std::cout << "   <<   ";
+				}
+				else {
+					std::cout << "        ";
+				}
 			}
 		}
 		std::cout << "|" << std::endl;
