@@ -13,8 +13,8 @@
 
 int main() {
 	srand(time(NULL));
-//	GameWorld gw = GameWorld("../test.txt");
-	GameWorld gw = GameWorld();
+	GameWorld gw = GameWorld("../test.txt");
+//	GameWorld gw = GameWorld();
 //	PlayerAgent a = PlayerAgent(gw);
 	IntelligentAgent a = IntelligentAgent(gw);
 	gw.printWorld();

@@ -54,6 +54,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 		case RoomContent::WUMPUS:
 			wumpus_attack = true; break;
 		case RoomContent::SUPMUW_EVIL:
+			std::cout << "Testing:: SUPMUW IS EVIL\n";
 			supmuw_attack = true; break;
 		case RoomContent::SUPMUW:
 			supmuw_exists = true; break;

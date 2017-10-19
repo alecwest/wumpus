@@ -108,9 +108,10 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 	std::vector<int> adjRooms = adjacentRooms(room);
 	std::vector<int> diagRooms = adjacentDiagonalRooms(room);
 	std::vector<int> allRooms;
-	allRooms.reserve( adjRooms.size() + diagRooms.size() ); // preallocate memory
+	allRooms.reserve( adjRooms.size() + diagRooms.size() + 1); // preallocate memory
 	allRooms.insert( allRooms.end(), adjRooms.begin(), adjRooms.end() );
 	allRooms.insert( allRooms.end(), diagRooms.begin(), diagRooms.end() );
+	allRooms.push_back(room);
 	switch(rc) {
 	case RoomContent::GOLD:
 		addRoomContent(room, RoomContent::GLITTER);
@@ -286,10 +287,20 @@ void GameWorld::printWorld() {
 		// First line prints physical objects
 		for (int j = 0; j < gridSize; j++) {
 			std::cout << "|" <<
-						 (world.at(i + j).hasContent(RoomContent::GOLD) ? "G " : "  ") <<
-						 (world.at(i + j).hasContent(RoomContent::PIT) ? "P " : "  ") <<
-					     (world.at(i + j).hasContent(RoomContent::WUMPUS) ? "W " : "  ") <<
-					     (world.at(i + j).hasContent(RoomContent::SUPMUW) ? "S " : "  ");
+						 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
+						 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
+						 (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
+			if(roomHasContent(i + j, RoomContent::SUPMUW)) {
+				std::cout << "S" <<
+							 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
+				// Food should only exist in room if SUPMUW does
+			}
+			else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
+				std::cout << "E ";
+			}
+			else {
+				std::cout << "  ";
+			}
 		}
 		std::cout << "|" << std::endl;
 		// Second line prints sensations

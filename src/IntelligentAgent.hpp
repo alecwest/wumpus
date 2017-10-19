@@ -5,6 +5,7 @@
 #define DEF_INTELLIGENTAGENT
 
 #include <climits>
+#include <cmath>
 #include <queue>
 
 #include "Agent.hpp"
@@ -39,14 +40,18 @@ private:
 	void goToRoom(int r);
 	// Find the closest FRINGE room (that the agent can safely reach) and take that path
 	void pathToFringe();
-	// Finds the fastest path to a safe Fringe room
-	std::queue<Move> depthLimitedSearch(int currRoom, Direction currDir, std::queue<Move> movesToAdd, int depth, bool targetHome);
+	/*
+	 * Finds the fastest path to a new, safe room.
+	 * If targetHome is set, algorithm should shift priorities to going back to safe room
+	 */
+	std::queue<Move> depthLimitedSearch(int currRoom, Direction currDir, std::queue<Move> movesToAdd, std::vector<int> roomsInPath, int depth, bool targetHome);
 	// Returns true if wumpus room has been identified
 	bool wumpusRoomFound();
 	// Returns true if supmuw room has been identified
 	bool supmuwRoomFound();
 	// Finds path back to safe room
 	void returnToSafeRoom();
+	double distanceFromRoom(int current, int target);
 public:
 	IntelligentAgent();
 	IntelligentAgent(const GameWorld &gw);
