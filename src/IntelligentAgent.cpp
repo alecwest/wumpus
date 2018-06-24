@@ -27,14 +27,14 @@ void IntelligentAgent::processMoves() {
 		moves.pop();
 		std::string message = "";
 		switch(move) {
-		case Move::FORWARD: if (printFrequency > 0) std::cout << "Moving forward\n"; forward(); break;
-		case Move::LEFT: if (printFrequency > 0) std::cout << "Turning left\n"; turnLeft(); break;
-		case Move::RIGHT: if (printFrequency > 0) std::cout << "Turning right\n"; turnRight(); break;
-		case Move::GRAB: if (printFrequency > 0) std::cout << "Grabbing\n"; grab(); break;
-		case Move::SHOOT: if (printFrequency > 0) std::cout << "Shooting\n"; shoot(); break;
-		case Move::EXIT: if (printFrequency > 0) std::cout << "Exiting\n"; exit(); break;
+		case Move::FORWARD: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Moving forward\n"; forward(); break;
+		case Move::LEFT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Turning left\n"; turnLeft(); break;
+		case Move::RIGHT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Turning right\n"; turnRight(); break;
+		case Move::GRAB: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Grabbing\n"; grab(); break;
+		case Move::SHOOT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Shooting\n"; shoot(); break;
+		case Move::EXIT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Exiting\n"; exit(); break;
 		}
-		if (printFrequency > 1 || info.gameOver) printWorld();
+		printWorld();
 	}
 }
 
@@ -370,7 +370,7 @@ void IntelligentAgent::returnToSafeRoom() {
 void IntelligentAgent::makeMove() {
 	std::vector<int> adjRooms;
 	int numAdjChecked;
-	if (printFrequency > 1) printWorld();
+	printWorld();
 	while (!info.gameOver) {
 		numAdjChecked = 0;
 		adjRooms = world.adjacentRooms(room);
@@ -439,7 +439,7 @@ void IntelligentAgent::makeMove() {
 		}
 
 		processMoves();
-		if (printFrequency == 3) {
+		if (printFrequency == PrintFrequency::EVERYTHING_WITH_PAUSE) {
 			std::cout << "Press enter to continue...";
 			getchar();
 		}

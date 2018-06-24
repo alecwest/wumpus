@@ -36,7 +36,8 @@ int Agent::calculateScore() {
 
 void Agent::printWorld() {
 	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY
-			|| printFrequency != PrintFrequency::FINAL_RESULT_WITH_TEXT_WALKTHROUGH) {
+			|| printFrequency != PrintFrequency::FINAL_RESULT_WITH_TEXT_WALKTHROUGH
+			|| info.gameOver) {
 		world.printWorld();
 	}
 }

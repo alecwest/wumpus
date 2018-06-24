@@ -15,8 +15,8 @@ int main() {
 	srand(time(NULL));
 
 	// Init world
-//	GameWorld gw = GameWorld("in.txt"); // Text file generation
-	GameWorld gw = GameWorld(); // Random terrain generation
+	GameWorld gw = GameWorld("in.txt"); // Text file generation
+//	GameWorld gw = GameWorld(); // Random terrain generation
 
 	// Init player
 //	PlayerAgent a = PlayerAgent(gw);
