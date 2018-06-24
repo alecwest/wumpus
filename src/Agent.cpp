@@ -141,7 +141,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	else if (message.length() == 0){
 		message = "This room seems clear...\n";
 	}
-	std::cout << message;
+	printMessage(message);
 }
 
 void Agent::turnLeft() {
@@ -232,14 +232,14 @@ RoomContent Agent::shoot() {
 
 	if (hit == RoomContent::WUMPUS) {
 		info.wumpusKilled = true;
-		std::cout << "You hear a piercing scream. You killed the Wumpus!\n";
+		printMessage("You hear a piercing scream. You killed the Wumpus!");
 	}
 	else if (hit == RoomContent::SUPMUW) {
 		info.supmuwKilled = true;
-		std::cout << "You hear an anguished moo. You killed the Supmuw!\n";
+		printMessage("You hear an anguished moo. You killed the Supmuw!");
 	}
 	else {
-		std::cout << "Your arrow vanishes into the darkness and nothing is heard.\n";
+		printMessage("Your arrow vanishes into the darkness and nothing is heard.");
 	}
 
 	info.arrowShot = true;
@@ -248,7 +248,7 @@ RoomContent Agent::shoot() {
 
 void Agent::gameOver() {
 	info.gameOver = true;
-	std::cout << "Game Over!" << std::endl << "Your score: " << calculateScore() << std::endl;
+	printMessage("Game Over!\nYour score: " + calculateScore());
 }
 
 void Agent::setPrintFrequency(PrintFrequency freq) {
