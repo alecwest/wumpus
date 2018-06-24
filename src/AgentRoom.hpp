@@ -39,6 +39,10 @@ public:
 	 * Returns true if room is visited
 	 */
 	bool roomVisited();
+	/*
+	 * Returns true if room is not blocked
+	 */
+	bool canEnterRoom();
 };
 
 

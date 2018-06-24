@@ -59,13 +59,14 @@ bool AgentRoom::safeUnvisitedRoom() {
 }
 
 bool AgentRoom::safeRoom() {
-	return (getRoomStatus() == RoomStatus::VISITED
-			&& !roomBlockaded())
-			|| (!hasInference(Inference::CONTAINS_PIT)
-					&& !hasInference(Inference::CONTAINS_SUPMUW_EVIL)
-					&& !hasInference(Inference::CONTAINS_WUMPUS));
+	return (roomVisited() && canEnterRoom())
+			|| (safeUnvisitedRoom());
 }
 
 bool AgentRoom::roomVisited() {
 	return status == RoomStatus::VISITED;
+}
+
+bool AgentRoom::canEnterRoom() {
+	return !roomBlockaded();
 }
