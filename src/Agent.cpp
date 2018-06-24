@@ -10,7 +10,7 @@ Agent::Agent() {
 	room = 0;
 	world.addRoomContent(room, getAgentRoomContent());
 	world.perceptWorld(room);
-	printFrequency = 0;
+	printFrequency = PrintFrequency::FINAL_RESULT_ONLY;
 }
 
 Agent::Agent(const GameWorld &gw) {
@@ -19,7 +19,7 @@ Agent::Agent(const GameWorld &gw) {
 	room = 0;
 	world.addRoomContent(room, getAgentRoomContent());
 	world.perceptWorld(room);
-	printFrequency = 0;
+	printFrequency = PrintFrequency::FINAL_RESULT_ONLY;
 }
 
 Agent::~Agent() {}
@@ -93,7 +93,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	}
 
 	// Skip encounter message depending on print frequency
-	if (printFrequency == 0) return;
+	if (printFrequency == PrintFrequency::FINAL_RESULT_ONLY) return;
 
 	// Process your move's encounter message
 	if (breeze_felt) {
@@ -241,8 +241,7 @@ void Agent::gameOver() {
 	std::cout << "Game Over!" << std::endl << "Your score: " << calculateScore() << std::endl;
 }
 
-void Agent::setPrintFrequency(int freq) {
-	if (freq < 0 || freq > 3) return;
+void Agent::setPrintFrequency(PrintFrequency freq) {
 	printFrequency = freq;
 }
 

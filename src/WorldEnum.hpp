@@ -80,6 +80,9 @@ inline Move bestDirectionToTurn(Direction currDir, Direction targetDir) {
 	}
 }
 
+enum class PrintFrequency { FINAL_RESULT_ONLY, FINAL_RESULT_WITH_TEXT_WALKTHROUGH,
+							EVERYTHING_WITHOUT_PAUSE, EVERYTHING_WITH_PAUSE };
+
 struct ExplorationStats {
 	bool alive = true;
 	bool gameOver = false;
