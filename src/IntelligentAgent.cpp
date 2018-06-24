@@ -25,14 +25,13 @@ void IntelligentAgent::processMoves() {
 	while (!moves.empty() && !info.gameOver) {
 		Move move = moves.front();
 		moves.pop();
-		std::string message = "";
 		switch(move) {
-		case Move::FORWARD: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Moving forward\n"; forward(); break;
-		case Move::LEFT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Turning left\n"; turnLeft(); break;
-		case Move::RIGHT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Turning right\n"; turnRight(); break;
-		case Move::GRAB: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Grabbing\n"; grab(); break;
-		case Move::SHOOT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Shooting\n"; shoot(); break;
-		case Move::EXIT: if (printFrequency != PrintFrequency::FINAL_RESULT_ONLY) std::cout << "Exiting\n"; exit(); break;
+		case Move::FORWARD: printMessage("Moving forward"); forward(); break;
+		case Move::LEFT: printMessage("Turning left"); turnLeft(); break;
+		case Move::RIGHT: printMessage("Turning right"); turnRight(); break;
+		case Move::GRAB: printMessage("Grabbing"); grab(); break;
+		case Move::SHOOT: printMessage("Shooting"); shoot(); break;
+		case Move::EXIT: printMessage("Exiting"); exit(); break;
 		}
 		printWorld();
 	}
