@@ -14,7 +14,7 @@ void PlayerAgent::makeMove() {
 	printWorld();
 	while (move != "q" && !info.gameOver) {
 		if (info.alive) {
-			std::cout << "Where to next? (r)ight, (l)eft, (f)orward, (s)hoot, (g)rab, (e)xit, (q)uit ";
+			printMessage("Where to next? (r)ight, (l)eft, (f)orward, (s)hoot, (g)rab, (e)xit, (q)uit ");
 			std::getline(std::cin, move);
 			if (move == "r")
 				turnRight();

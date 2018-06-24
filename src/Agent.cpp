@@ -44,7 +44,7 @@ void Agent::printWorld() {
 
 void Agent::printMessage(std::string message) {
 	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY || info.gameOver) {
-		std::cout << message << std::endl;
+		std::cout << message;
 	}
 }
 
@@ -232,14 +232,14 @@ RoomContent Agent::shoot() {
 
 	if (hit == RoomContent::WUMPUS) {
 		info.wumpusKilled = true;
-		printMessage("You hear a piercing scream. You killed the Wumpus!");
+		printMessage("You hear a piercing scream. You killed the Wumpus!\n");
 	}
 	else if (hit == RoomContent::SUPMUW) {
 		info.supmuwKilled = true;
-		printMessage("You hear an anguished moo. You killed the Supmuw!");
+		printMessage("You hear an anguished moo. You killed the Supmuw!\n");
 	}
 	else {
-		printMessage("Your arrow vanishes into the darkness and nothing is heard.");
+		printMessage("Your arrow vanishes into the darkness and nothing is heard.\n");
 	}
 
 	info.arrowShot = true;
@@ -248,7 +248,7 @@ RoomContent Agent::shoot() {
 
 void Agent::gameOver() {
 	info.gameOver = true;
-	printMessage("Game Over!\nYour score: " + calculateScore());
+	printMessage("Game Over!\nYour score: " + calculateScore() + "\n");
 }
 
 void Agent::setPrintFrequency(PrintFrequency freq) {
