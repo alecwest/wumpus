@@ -35,7 +35,16 @@ int Agent::calculateScore() {
 }
 
 void Agent::printWorld() {
-	world.printWorld();
+	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY
+			|| printFrequency != PrintFrequency::FINAL_RESULT_WITH_TEXT_WALKTHROUGH) {
+		world.printWorld();
+	}
+}
+
+void Agent::printMessage(std::string message) {
+	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY) {
+		std::cout << message << std::endl;
+	}
 }
 
 // Determine if anything  should happen based on the Room's Contents

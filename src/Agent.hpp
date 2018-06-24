@@ -29,6 +29,7 @@ public:
 	virtual ~Agent();
 	int calculateScore();
 	void printWorld();
+	void printMessage(std::string message);
 	void gameOver();
 	// 0 = final result only, 1 = final result and text walkthrough, 2 = everything without stopping, 3 = everything with getchar() pause
 	void setPrintFrequency(PrintFrequency freq);
