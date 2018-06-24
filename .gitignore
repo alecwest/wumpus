@@ -2,3 +2,5 @@
 /src/*.gch
 .metadata
 Default/*.exe
+.settings
+Default/src/*
