@@ -43,7 +43,7 @@ void Agent::printWorld() {
 }
 
 void Agent::printMessage(std::string message) {
-	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY) {
+	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY || info.gameOver) {
 		std::cout << message << std::endl;
 	}
 }
