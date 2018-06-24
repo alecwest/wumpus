@@ -3,6 +3,5 @@
 .metadata
 Default/*.exe
 Default/wumpus*
-.settings
 Default/src/*
 Debug/src/*
