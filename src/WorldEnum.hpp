@@ -9,6 +9,7 @@
 #define SRC_WORLDENUM_HPP_
 
 #include <vector>
+#include <map>
 
 enum class Direction { NORTH, EAST, SOUTH, WEST };
 inline std::vector<Direction> directionVector() {
@@ -42,6 +43,30 @@ inline Direction left(Direction d) {
 enum class RoomContent { AGENT_DEAD, AGENT_EAST, AGENT_NORTH, AGENT_SOUTH, AGENT_WEST,
 						 BLOCKADE, BREEZE, BUMP, FOOD, GLITTER, GOLD, MOO, PIT, STENCH,
 						 SUPMUW_EVIL, SUPMUW, WUMPUS };
+
+std::string GetRoomContentStringMap(RoomContent rc) {
+	static const std::map<RoomContent, std::string> roomContentToString = {
+			{ RoomContent::AGENT_DEAD, "   XX   " },
+			{ RoomContent::AGENT_EAST, "   >>   " },
+			{ RoomContent::AGENT_NORTH, "   ^^   " },
+			{ RoomContent::AGENT_SOUTH, "   vv   " },
+			{ RoomContent::AGENT_WEST, "   <<   " },
+			{ RoomContent::BLOCKADE, "XXXXXXXX" },
+			{ RoomContent::BREEZE, " B" },
+			{ RoomContent::BUMP, "" },
+			{ RoomContent::FOOD, "F" },
+			{ RoomContent::GLITTER, " G" },
+			{ RoomContent::GOLD, "G " },
+			{ RoomContent::MOO, " M" },
+			{ RoomContent::PIT, "P " },
+			{ RoomContent::STENCH, " S" },
+			{ RoomContent::SUPMUW_EVIL, "E " },
+			{ RoomContent::SUPMUW, "S" },
+			{ RoomContent::WUMPUS, "W " }
+	};
+
+	return roomContentToString.find(rc)->second;
+}
 
 enum class Inference { CONTAINS_PIT, CONTAINS_SUPMUW, CONTAINS_SUPMUW_EVIL, CONTAINS_WUMPUS,
 					   PIT_FREE, SUPMUW_FREE, SUPMUW_EVIL_FREE, WUMPUS_FREE, BLOCKADE };
