@@ -64,23 +64,18 @@ GameWorld::GameWorld(std::string fileName) : World() {
 			continue; // Skip any that try to place something in or adjacent to the safe square
 		}
 		else if (content.find("blockade") != std::string::npos) {
-//			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::BLOCKADE);
 		}
 		else if (content.find("pit") != std::string::npos) {
-//			std::cout << "Testing:: adding pit to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::PIT);
 		}
 		else if (content.find("wumpus") != std::string::npos) {
-//			std::cout << "Testing:: adding wumpus to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::WUMPUS);
 		}
 		else if (content.find("gold") != std::string::npos) {
-//			std::cout << "Testing:: adding gold to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::GOLD);
 		}
 		else if (content.find("supmuw") != std::string::npos) {
-//			std::cout << "Testing:: adding supmuw to (" << locX << ", " << locY << ")\n";
 			addToRoom(locX * gridSize + locY, RoomContent::SUPMUW);
 		}
 	}
