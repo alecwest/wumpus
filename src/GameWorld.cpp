@@ -298,9 +298,9 @@ void GameWorld::printWorld() {
 			else {
 
 				std::cout << "|" <<
-							 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
-							 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
-							 (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
+							 (roomHasContent(i + j, RoomContent::GOLD) ? GetRoomContentStringMap(RoomContent::GOLD) : "") <<
+							 (roomHasContent(i + j, RoomContent::PIT) ? GetRoomContentStringMap(RoomContent::PIT) : "") <<
+							 (roomHasContent(i + j, RoomContent::WUMPUS) ? GetRoomContentStringMap(RoomContent::WUMPUS) : "");
 				if(roomHasContent(i + j, RoomContent::SUPMUW)) {
 					std::cout << "S" <<
 								 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
@@ -317,15 +317,15 @@ void GameWorld::printWorld() {
 		std::cout << "|" << std::endl;
 		// Second line prints sensations
 		for (int j = 0; j < gridSize; j++) {
+			std::cout << "|";
 			if (roomBlockaded(i + j)) {
-				std::cout << "|XXXXXXXX";
+				std::cout << GetRoomContentStringMap(RoomContent::BLOCKADE);
 			}
 			else {
-				std::cout << "|" <<
-							(world.at(i + j).hasContent(RoomContent::BREEZE) ? " B" : "  ") <<
-							(world.at(i + j).hasContent(RoomContent::GLITTER) ? " G" : "  ") <<
-							(world.at(i + j).hasContent(RoomContent::MOO) ? " M" : "  ") <<
-							(world.at(i + j).hasContent(RoomContent::STENCH) ? " S" : "  ");
+				std::cout << (world.at(i + j).hasContent(RoomContent::BREEZE) ? GetRoomContentStringMap(RoomContent::BREEZE) : "") <<
+							(world.at(i + j).hasContent(RoomContent::GLITTER) ? GetRoomContentStringMap(RoomContent::GLITTER) : "") <<
+							(world.at(i + j).hasContent(RoomContent::MOO) ? GetRoomContentStringMap(RoomContent::MOO) : "") <<
+							(world.at(i + j).hasContent(RoomContent::STENCH) ? GetRoomContentStringMap(RoomContent::STENCH) : "");
 			}
 		}
 		std::cout << "|" << std::endl;
@@ -337,19 +337,19 @@ void GameWorld::printWorld() {
 			}
 			else {
 				if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
-					std::cout << "   ^^   ";
+					std::cout << GetRoomContentStringMap(RoomContent::AGENT_NORTH);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
-					std::cout << "   >>   ";
+					std::cout << GetRoomContentStringMap(RoomContent::AGENT_EAST);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
-					std::cout << "   vv   ";
+					std::cout << GetRoomContentStringMap(RoomContent::AGENT_SOUTH);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
-					std::cout << "   <<   ";
+					std::cout << GetRoomContentStringMap(RoomContent::AGENT_WEST);
 				}
 				else {
-					std::cout << "        ";
+					std::cout << GetRoomContentStringMap(RoomContent::AGENT_NONE);
 				}
 			}
 		}
@@ -357,4 +357,15 @@ void GameWorld::printWorld() {
 
 		printDividingLine();
 	}
+}
+
+std::string GameWorld::stretchRoomRow(std::string roomRow) {
+	while(roomRow.length() < ROOM_WIDTH) {
+		if(roomRow.length() % 2 == 0) {
+			roomRow.insert(0, " ");
+		} else {
+			roomRow.insert(roomRow.length() - 1, " ");
+		}
+	}
+	return roomRow;
 }

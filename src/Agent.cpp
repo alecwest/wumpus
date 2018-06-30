@@ -248,7 +248,8 @@ RoomContent Agent::shoot() {
 
 void Agent::gameOver() {
 	info.gameOver = true;
-	printMessage("Game Over!\nYour score: " + calculateScore() + "\n");
+	std::cout << "Game Over!\nYour score: " << calculateScore() << "\n";
+	printMessage(std::to_string(calculateScore()));
 }
 
 void Agent::setPrintFrequency(PrintFrequency freq) {

@@ -5,3 +5,4 @@ Default/*.exe
 Default/wumpus*
 Default/src/*
 Debug/src/*
+/Default/

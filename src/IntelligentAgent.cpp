@@ -26,12 +26,12 @@ void IntelligentAgent::processMoves() {
 		Move move = moves.front();
 		moves.pop();
 		switch(move) {
-		case Move::FORWARD: printMessage("Moving forward\n"); forward(); break;
-		case Move::LEFT: printMessage("Turning left\n"); turnLeft(); break;
-		case Move::RIGHT: printMessage("Turning right\n"); turnRight(); break;
-		case Move::GRAB: printMessage("Grabbing\n"); grab(); break;
-		case Move::SHOOT: printMessage("Shooting\n"); shoot(); break;
-		case Move::EXIT: printMessage("Exiting\n"); exit(); break;
+		case Move::FORWARD: this->printMessage("Moving forward\n"); forward(); break;
+		case Move::LEFT: this->printMessage("Turning left\n"); turnLeft(); break;
+		case Move::RIGHT: this->printMessage("Turning right\n"); turnRight(); break;
+		case Move::GRAB: this->printMessage("Grabbing\n"); grab(); break;
+		case Move::SHOOT: this->printMessage("Shooting\n"); shoot(); break;
+		case Move::EXIT: this->printMessage("Exiting\n"); exit(); break;
 		}
 		printWorld();
 	}

@@ -4,6 +4,8 @@
 #ifndef DEF_AGENT
 #define DEF_AGENT
 
+#include <cstring>
+
 #include "AgentWorld.hpp"
 #include "WorldEnum.hpp"
 

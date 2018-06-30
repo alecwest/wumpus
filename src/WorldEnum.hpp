@@ -40,29 +40,30 @@ inline Direction left(Direction d) {
 	}
 }
 
-enum class RoomContent { AGENT_DEAD, AGENT_EAST, AGENT_NORTH, AGENT_SOUTH, AGENT_WEST,
+enum class RoomContent { AGENT_DEAD, AGENT_EAST, AGENT_NONE, AGENT_NORTH, AGENT_SOUTH, AGENT_WEST,
 						 BLOCKADE, BREEZE, BUMP, FOOD, GLITTER, GOLD, MOO, PIT, STENCH,
 						 SUPMUW_EVIL, SUPMUW, WUMPUS };
 
-std::string GetRoomContentStringMap(RoomContent rc) {
+inline std::string GetRoomContentStringMap(RoomContent rc) {
 	static const std::map<RoomContent, std::string> roomContentToString = {
-			{ RoomContent::AGENT_DEAD, "   XX   " },
-			{ RoomContent::AGENT_EAST, "   >>   " },
-			{ RoomContent::AGENT_NORTH, "   ^^   " },
-			{ RoomContent::AGENT_SOUTH, "   vv   " },
-			{ RoomContent::AGENT_WEST, "   <<   " },
+			{ RoomContent::AGENT_DEAD, "XX" },
+			{ RoomContent::AGENT_EAST, ">>" },
+			{ RoomContent::AGENT_NONE, "" },
+			{ RoomContent::AGENT_NORTH, "^^" },
+			{ RoomContent::AGENT_SOUTH, "vv" },
+			{ RoomContent::AGENT_WEST, "<<" },
 			{ RoomContent::BLOCKADE, "XXXXXXXX" },
-			{ RoomContent::BREEZE, " B" },
+			{ RoomContent::BREEZE, "B" },
 			{ RoomContent::BUMP, "" },
 			{ RoomContent::FOOD, "F" },
-			{ RoomContent::GLITTER, " G" },
-			{ RoomContent::GOLD, "G " },
-			{ RoomContent::MOO, " M" },
-			{ RoomContent::PIT, "P " },
-			{ RoomContent::STENCH, " S" },
-			{ RoomContent::SUPMUW_EVIL, "E " },
+			{ RoomContent::GLITTER, "G" },
+			{ RoomContent::GOLD, "G" },
+			{ RoomContent::MOO, "M" },
+			{ RoomContent::PIT, "P" },
+			{ RoomContent::STENCH, "S" },
+			{ RoomContent::SUPMUW_EVIL, "E" },
 			{ RoomContent::SUPMUW, "S" },
-			{ RoomContent::WUMPUS, "W " }
+			{ RoomContent::WUMPUS, "W" }
 	};
 
 	return roomContentToString.find(rc)->second;

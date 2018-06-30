@@ -10,11 +10,11 @@
 #include "Room.hpp"
 #include "WorldEnum.hpp"
 
-class World
-{
+class World {
 private:
 	std::vector<Room> world; // Will declare vector of GameRooms and AgentRooms in each respective world
 protected:
+	static const int ROOM_WIDTH = 8;
 	int gridSize;
 	void printDividingLine();
 
