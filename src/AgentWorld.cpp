@@ -182,19 +182,3 @@ RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
 	}
 	return  RoomContent::BUMP;
 }
-
-void AgentWorld::printWorld() {
-	std::string row;
-	std::string roomRow;
-	if (world.size() < 0 || gridSize < 0){
-		std::cout << "Could not print this world!";
-		return;
-	}
-	printDividingLine();
-	for (int i = world.size() - gridSize; i >= 0; i -= gridSize) {
-		printTopRoomRow(i);
-		printMiddleRoomRow(i);
-		printBottomRoomRow(i);
-		printDividingLine();
-	}
-}

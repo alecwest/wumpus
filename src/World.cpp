@@ -24,15 +24,20 @@ int World::getNumRooms() {
 	return world.size();
 }
 
-std::string World::stretchRoomRow(std::string roomRow) {
-	while(roomRow.length() < ROOM_WIDTH) {
-		if(roomRow.length() % 2 == 0) {
-			roomRow.insert(0, " ");
-		} else {
-			roomRow.insert(roomRow.length() - 1, " ");
-		}
+void World::printWorld() {
+	std::string row;
+	std::string roomRow;
+	if (world.size() < 0 || gridSize < 0){
+		std::cout << "Could not print this world!";
+		return;
 	}
-	return roomRow;
+	printDividingLine();
+	for (int i = world.size() - gridSize; i >= 0; i -= gridSize) {
+		printTopRoomRow(i);
+		printMiddleRoomRow(i);
+		printBottomRoomRow(i);
+		printDividingLine();
+	}
 }
 
 void World::printTopRoomRow(int firstRoomInRow) {
@@ -125,6 +130,17 @@ void World::printBottomRoomRow(int firstRoomInRow) {
 		row += roomRow;
 	}
 	std::cout << row << "|" << std::endl;
+}
+
+std::string World::stretchRoomRow(std::string roomRow) {
+	while(roomRow.length() < ROOM_WIDTH) {
+		if(roomRow.length() % 2 == 0) {
+			roomRow.insert(0, " ");
+		} else {
+			roomRow.insert(roomRow.length() - 1, " ");
+		}
+	}
+	return roomRow;
 }
 
 RoomStatus World::getRoomStatus(int room) {

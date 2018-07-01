@@ -47,7 +47,6 @@ public:
 	 * Returns SUPMUW or WUMPUS if either is shot and BUMP if it hits a wall or BLOCKADE
 	 */
 	RoomContent agentShot(int shootingRoom, Direction directionShot);
-	void printWorld();
 };
 
 
