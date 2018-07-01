@@ -253,15 +253,6 @@ std::vector<int> GameWorld::allAdjacentRooms(int room) {
 	return allRooms;
 }
 
-Room GameWorld::getRoom(int room) {
-	if (room >= 0 && room < (int) world.size()) {
-		return world.at(room);
-	}
-	else {
-		return Room();
-	}
-}
-
 bool GameWorld::roomHasContent(int room, RoomContent rc) {
 	return getRoom(room).hasContent(rc);
 }

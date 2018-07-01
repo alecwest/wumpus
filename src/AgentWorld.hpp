@@ -34,7 +34,6 @@ public:
 	// Returns true if room is safe, but not necessarily visited
 	bool safeRoom(int room);
 	bool roomVisited(int room);
-	Room getRoom(int room);
 	bool roomHasContent(int room, RoomContent rc);
 	bool roomBlockaded(int room);
 	bool roomIsEmpty(int room);

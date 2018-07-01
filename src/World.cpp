@@ -152,3 +152,11 @@ RoomStatus World::getRoomStatus(int room) {
 void World::setRoomStatus(int room, RoomStatus rs) {
 	world.at(room).setRoomStatus(rs);
 }
+
+Room World::getRoom(int room) {
+	if (room >= 0 && room < (int) world.size()) {
+		 return world.at(room);
+	} else {
+		return Room();
+	}
+}

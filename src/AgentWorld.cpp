@@ -88,15 +88,6 @@ std::vector<int> AgentWorld::allAdjacentRooms(int room) {
 	return allRooms;
 }
 
-Room AgentWorld::getRoom(int room) {
-	if (room >= 0 && room < (int) world.size()) {
-		return world.at(room);
-	}
-	else {
-		return Room();
-	}
-}
-
 bool AgentWorld::roomHasContent(int room, RoomContent rc) {
 	if (room < 0 || room > getNumRooms()) return false;
 	return getRoom(room).hasContent(rc);
