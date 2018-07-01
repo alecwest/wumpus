@@ -195,6 +195,8 @@ RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
 }
 
 void AgentWorld::printWorld() {
+	std::string row;
+	std::string roomRow;
 	if (world.size() < 0 || gridSize < 0){
 		std::cout << "Could not print this world!";
 		return;
@@ -202,82 +204,82 @@ void AgentWorld::printWorld() {
 	RoomStatus rs;
 	printDividingLine();
 	for (int i = world.size() - gridSize; i >= 0; i -= gridSize) {
+		row = "";
 		// First line prints physical objects
 		for (int j = 0; j < gridSize; j++) {
+			roomRow = "";
 			if (roomBlockaded(i + j)) {
-				std::cout << "|XXXXXXXX";
+				roomRow += GetRoomContentStringMap(RoomContent::BLOCKADE);
 			}
 			else {
-				std::cout << "|" <<
-							 (roomHasContent(i + j, RoomContent::GOLD) ? "G " : "  ") <<
-							 (roomHasContent(i + j, RoomContent::PIT) ? "P " : "  ") <<
-							 (roomHasContent(i + j, RoomContent::WUMPUS) ? "W " : "  ");
+				roomRow += (roomHasContent(i + j, RoomContent::GOLD) ? GetRoomContentStringMap(RoomContent::GOLD) : "") +
+						(roomHasContent(i + j, RoomContent::PIT) ? GetRoomContentStringMap(RoomContent::PIT) : "") +
+						(roomHasContent(i + j, RoomContent::WUMPUS) ? GetRoomContentStringMap(RoomContent::WUMPUS) : "");
 				if(roomHasContent(i + j, RoomContent::SUPMUW)) {
-					std::cout << "S" <<
-								 (roomHasContent(i + j, RoomContent::FOOD) ? "F" : " ");
+					roomRow += GetRoomContentStringMap(RoomContent::SUPMUW) +
+							(roomHasContent(i + j, RoomContent::FOOD) ? GetRoomContentStringMap(RoomContent::FOOD) : "");
 					// Food should only exist in room if SUPMUW does
 				}
 				else if (roomHasContent(i + j, RoomContent::SUPMUW_EVIL)) {
-					std::cout << "E ";
-				}
-				else {
-					std::cout << "  ";
+					roomRow += GetRoomContentStringMap(RoomContent::SUPMUW_EVIL);
 				}
 			}
+			roomRow = "|" + stretchRoomRow(roomRow);
+			row += roomRow;
 		}
-		std::cout << "|" << std::endl;
+		std::cout << row << "|" << std::endl;
+		row = "";
 		// Second line prints sensations
 		for (int j = 0; j < gridSize; j++) {
+			roomRow = "";
 			if (roomBlockaded(i + j)) {
-				std::cout << "|XXXXXXXX";
+				roomRow += GetRoomContentStringMap(RoomContent::BLOCKADE);
 			}
 			else {
-				std::cout << "|" <<
-							 (roomHasContent(i + j, RoomContent::BREEZE) ? " B" : "  ") <<
-							 (roomHasContent(i + j, RoomContent::GLITTER) ? " G" : "  ") <<
-							 (roomHasContent(i + j, RoomContent::MOO) ? " M" : "  ") <<
-							 (roomHasContent(i + j, RoomContent::STENCH) ? " S" : "  ");
+				roomRow += (world.at(i + j).hasContent(RoomContent::BREEZE) ? GetRoomContentStringMap(RoomContent::BREEZE) : "") +
+						(world.at(i + j).hasContent(RoomContent::GLITTER) ? GetRoomContentStringMap(RoomContent::GLITTER) : "") +
+						(world.at(i + j).hasContent(RoomContent::MOO) ? GetRoomContentStringMap(RoomContent::MOO) : "") +
+						(world.at(i + j).hasContent(RoomContent::STENCH) ? GetRoomContentStringMap(RoomContent::STENCH) : "");
 			}
+			roomRow = "|" + stretchRoomRow(roomRow);
+			row += roomRow;
 		}
-		std::cout << "|" << std::endl;
+		std::cout << row << "|" << std::endl;
+		row = "";
 		// Third line prints the agent and the room status
 		for (int j = 0; j < gridSize; j++) {
+			roomRow = "";
 			if (roomBlockaded(i + j)) {
-				std::cout << "|XXXXXXXX";
+				roomRow += GetRoomContentStringMap(RoomContent::BLOCKADE);
 			}
 			else {
 				rs = getRoomStatus(i + j);
-				std::cout << "|";
 				if (world.at(i + j).hasContent(RoomContent::AGENT_NORTH)) {
-					std::cout << "   ^^  ";
+					roomRow += GetRoomContentStringMap(RoomContent::AGENT_NORTH);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_EAST)) {
-					std::cout << "   >>  ";
+					roomRow += GetRoomContentStringMap(RoomContent::AGENT_EAST);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_SOUTH)) {
-					std::cout << "   vv  ";
+					roomRow += GetRoomContentStringMap(RoomContent::AGENT_SOUTH);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_WEST)) {
-					std::cout << "   <<  ";
+					roomRow += GetRoomContentStringMap(RoomContent::AGENT_WEST);
 				}
 				else if (world.at(i + j).hasContent(RoomContent::AGENT_DEAD)) {
-					std::cout << "  RIP  ";
-				}
-				else {
-					std::cout << "       ";
+					roomRow += GetRoomContentStringMap(RoomContent::AGENT_DEAD);
 				}
 				if (rs == RoomStatus::VISITED) {
-					std::cout << "*";
+					roomRow += "*"; // TODO GetRoomStatusStringMap
 				}
 				else if (rs == RoomStatus::FRINGE) {
-					std::cout << "?";
-				}
-				else {
-					std::cout << " ";
+					roomRow += "?";
 				}
 			}
+			roomRow = "|" + stretchRoomRow(roomRow);
+			row += roomRow;
 		}
-		std::cout << "|" << std::endl;
+		std::cout << row << "|" << std::endl;
 
 		printDividingLine();
 	}

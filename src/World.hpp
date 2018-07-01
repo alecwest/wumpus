@@ -17,6 +17,7 @@ protected:
 	static const int ROOM_WIDTH = 8;
 	int gridSize;
 	void printDividingLine();
+	std::string stretchRoomRow(std::string roomRow);
 
 public:
 	World();

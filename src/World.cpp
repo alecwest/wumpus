@@ -19,3 +19,14 @@ void World::printDividingLine() {
 int World::getGridSize() {
 	return gridSize;
 }
+
+std::string World::stretchRoomRow(std::string roomRow) {
+	while(roomRow.length() < ROOM_WIDTH) {
+		if(roomRow.length() % 2 == 0) {
+			roomRow.insert(0, " ");
+		} else {
+			roomRow.insert(roomRow.length() - 1, " ");
+		}
+	}
+	return roomRow;
+}

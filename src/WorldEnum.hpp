@@ -46,7 +46,7 @@ enum class RoomContent { AGENT_DEAD, AGENT_EAST, AGENT_NONE, AGENT_NORTH, AGENT_
 
 inline std::string GetRoomContentStringMap(RoomContent rc) {
 	static const std::map<RoomContent, std::string> roomContentToString = {
-			{ RoomContent::AGENT_DEAD, "XX" },
+			{ RoomContent::AGENT_DEAD, "RIP" },
 			{ RoomContent::AGENT_EAST, ">>" },
 			{ RoomContent::AGENT_NONE, "" },
 			{ RoomContent::AGENT_NORTH, "^^" },

@@ -37,7 +37,6 @@ public:
 private:
 	void addToAdjacentRooms(int room, RoomContent rc);
 	void addToAdjacentDiagonalRooms(int room, RoomContent rc);
-	std::string stretchRoomRow(std::string roomRow);
 };
 
 
