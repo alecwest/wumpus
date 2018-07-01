@@ -21,7 +21,7 @@ public:
 	GameWorld(std::string fileName);
 	virtual ~GameWorld();
 	void addToRoom(int room, RoomContent rc);
-	int adjacentRoom(int room, Direction dir);
+	int getAdjacentRoomNumber(int room, Direction dir);
 	std::vector<int> adjacentRooms(int room);
 	std::vector<int> adjacentDiagonalRooms(int room);
 	std::vector<int> allAdjacentRooms(int room);

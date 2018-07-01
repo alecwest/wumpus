@@ -38,14 +38,14 @@ std::vector<RoomContent> AgentWorld::perceptWorld(int room) {
 	return content;
 }
 
-int AgentWorld::adjacentRoom(int room, Direction dir) {
+int AgentWorld::getAdjacentRoomNumber(int room, Direction dir) {
 	return world.at(room).adjacentRoom(dir);
 }
 
 std::vector<int> AgentWorld::adjacentRooms(int room) {
 	std::vector<int> rooms = std::vector<int>();
 	for (Direction d : directionVector()) {
-		int r = adjacentRoom(room, d);
+		int r = getAdjacentRoomNumber(room, d);
 		if (r > -1) rooms.push_back(r);
 	}
 	return rooms;
@@ -147,7 +147,7 @@ bool AgentWorld::roomVisited(int room) {
 }
 
 RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
-	int room = adjacentRoom(shootingRoom, directionShot);
+	int room = getAdjacentRoomNumber(shootingRoom, directionShot);
 	while (room > -1) {
 		if (gameWorld.roomHasContent(room, RoomContent::SUPMUW)) {
 			gameWorld.removeRoomContent(room, RoomContent::SUPMUW);
@@ -165,7 +165,7 @@ RoomContent AgentWorld::agentShot(int shootingRoom, Direction directionShot) {
 			return RoomContent::BUMP;
 		}
 
-		room = adjacentRoom(shootingRoom, directionShot);
+		room = getAdjacentRoomNumber(shootingRoom, directionShot);
 	}
 	return  RoomContent::BUMP;
 }

@@ -189,7 +189,7 @@ void Agent::turnRight() {
 }
 
 void Agent::forward() {
-	int nextRoom = world.adjacentRoom(room, dir);
+	int nextRoom = world.getAdjacentRoomNumber(room, dir);
 	info.movesTaken++;
 	if (nextRoom < 0) {
 		world.addRoomContent(room, RoomContent::BUMP);

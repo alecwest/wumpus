@@ -191,7 +191,7 @@ void GameWorld::addToAdjacentDiagonalRooms(int room, RoomContent rc) {
 	}
 }
 
-int GameWorld::adjacentRoom(int room, Direction dir) {
+int GameWorld::getAdjacentRoomNumber(int room, Direction dir) {
 	return world.at(room).adjacentRoom(dir);
 }
 

@@ -30,7 +30,7 @@ public:
 	void setRoomStatus(int room, RoomStatus rs);
 	void printWorld();
 	Room getRoom(int room);
-	virtual int adjacentRoom(int room, Direction dir) = 0;
+	virtual int getAdjacentRoomNumber(int room, Direction dir) = 0;
 	virtual std::vector<int> adjacentRooms(int room) = 0;
 	virtual std::vector<int> adjacentDiagonalRooms(int room) = 0; // Primary used for Supmuw's Moo
 	virtual std::vector<int> allAdjacentRooms(int room) = 0;

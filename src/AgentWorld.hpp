@@ -15,10 +15,8 @@ public:
 	AgentWorld();
 	AgentWorld(const GameWorld &gw);
 	virtual ~AgentWorld();
-	// Returns collection of physical objects and sensations perceived in this room
 	std::vector<RoomContent> perceptWorld(int room);
-	// Returns room number for specified direction, or -1 if no room exists
-	int adjacentRoom(int room, Direction dir);
+	int getAdjacentRoomNumber(int room, Direction dir);
 	// Returns collection of existing adjacent rooms
 	std::vector<int> adjacentRooms(int room);
 	// Returns collection of diagonally adjacent rooms

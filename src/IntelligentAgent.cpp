@@ -259,7 +259,7 @@ void IntelligentAgent::inferRooms() {
 
 void IntelligentAgent::faceRoom(int r) {
 	for (auto d : directionVector()) {
-		if (world.adjacentRoom(room, d) == r) {
+		if (world.getAdjacentRoomNumber(room, d) == r) {
 			turn(d);
 			return;
 		}
@@ -268,7 +268,7 @@ void IntelligentAgent::faceRoom(int r) {
 
 void IntelligentAgent::goToRoom(int r) {
 	for (auto d : directionVector()) {
-		if (world.adjacentRoom(room, d) == r) {
+		if (world.getAdjacentRoomNumber(room, d) == r) {
 			turn(d);
 			moves.push(Move::FORWARD);
 			return;
@@ -303,7 +303,7 @@ std::queue<Move> IntelligentAgent::depthLimitedSearch(
 	if (successors.empty()) return std::queue<Move>();
 	for (auto s : successors) {
 		for (auto d : directionVector()) {
-			if (world.adjacentRoom(currRoom, d) == s
+			if (world.getAdjacentRoomNumber(currRoom, d) == s
 					and world.safeRoom(s)
 					and not world.roomBlockaded(s)
 					and (std::find(roomsInPath.begin(), roomsInPath.end(), s) == roomsInPath.end()) // Can't already be in the path
@@ -395,11 +395,11 @@ void IntelligentAgent::makeMove() {
 			else {
 				returnToSafeRoom();
 				if (moves.size() == 0){
-					if (world.safeRoom(world.adjacentRoom(room, Direction::WEST))) {
+					if (world.safeRoom(world.getAdjacentRoomNumber(room, Direction::WEST))) {
 						turn(Direction::WEST);
 						moves.push(Move::FORWARD);
 					}
-					else if (world.safeRoom(world.adjacentRoom(room, Direction::SOUTH))) {
+					else if (world.safeRoom(world.getAdjacentRoomNumber(room, Direction::SOUTH))) {
 						turn(Direction::SOUTH);
 						moves.push(Move::FORWARD);
 					}
