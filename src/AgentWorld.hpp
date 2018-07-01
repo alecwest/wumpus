@@ -4,14 +4,10 @@
 #ifndef DEF_AGENTWORLD
 #define DEF_AGENTWORLD
 
-#include "AgentRoom.hpp"
 #include "GameWorld.hpp"
 #include "World.hpp"
 
-class AgentWorld : public World
-{
-private:
-	std::vector<AgentRoom> world;
+class AgentWorld : public World {
 protected:
 	GameWorld gameWorld;
 	
@@ -39,9 +35,7 @@ public:
 	bool safeRoom(int room);
 	bool roomVisited(int room);
 	Room getRoom(int room);
-	int getNumRooms();
-	void setRoomStatus(int room, RoomStatus rs);
-	RoomStatus getRoomStatus(int room);
+	int getNumRooms(); // TODO remove this in favor of World::getNumRooms()
 	bool roomHasContent(int room, RoomContent rc);
 	bool roomBlockaded(int room);
 	bool roomIsEmpty(int room);

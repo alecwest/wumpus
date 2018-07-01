@@ -98,7 +98,6 @@ void IntelligentAgent::inferRooms() {
 	///////////////////////////////////////////////
 
 	std::vector<int> adjRooms = world.adjacentRooms(room);
-
 	if (not info.goldFound and world.roomHasContent(room, RoomContent::GLITTER)) {
 		moves.push(Move::GRAB);
 		// Process moves immediately so we can begin finding a path home
@@ -157,7 +156,6 @@ void IntelligentAgent::inferRooms() {
 			markRoom(r, Inference::WUMPUS_FREE);
 		}
 	}
-
 
 	///////////////////////////////////////////
 	// ******* Begin Danger Location ******* //
