@@ -22,7 +22,6 @@ int main() {
 //	PlayerAgent a = PlayerAgent(gw);
 	IntelligentAgent a = IntelligentAgent(gw);
 
-	// TODO other PrintFrequencies don't work (specifically final result only)
 	a.setPrintFrequency(PrintFrequency::EVERYTHING_WITHOUT_PAUSE);
 
 	gw.printWorld();

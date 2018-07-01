@@ -10,8 +10,7 @@
 
 #include "Agent.hpp"
 
-class IntelligentAgent : public Agent
-{
+class IntelligentAgent : public Agent {
 private:
 	std::queue<Move> moves;
 	std::vector<int> stenchesFound;

@@ -35,8 +35,8 @@ int Agent::calculateScore() {
 }
 
 void Agent::printWorld() {
-	if(printFrequency != PrintFrequency::FINAL_RESULT_ONLY
-			|| printFrequency != PrintFrequency::FINAL_RESULT_WITH_TEXT_WALKTHROUGH
+	if((printFrequency != PrintFrequency::FINAL_RESULT_ONLY
+			&& printFrequency != PrintFrequency::FINAL_RESULT_WITH_TEXT_WALKTHROUGH)
 			|| info.gameOver) {
 		world.printWorld();
 	}
@@ -136,7 +136,7 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 		message += "You encountered the Wumpus! He's too quick to be stopped!\n";
 	}
 	else if (supmuw_attack) {
-		message = "The Supmuw is evil! You can't escape quick enough!\n";
+		message += "The Supmuw is evil! You can't escape quick enough!\n";
 	}
 	else if (message.length() == 0){
 		message = "This room seems clear...\n";

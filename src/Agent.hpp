@@ -9,8 +9,7 @@
 #include "AgentWorld.hpp"
 #include "WorldEnum.hpp"
 
-class Agent
-{
+class Agent {
 private:
 	void processPerception(std::vector<RoomContent> rc);
 protected:
