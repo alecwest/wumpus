@@ -160,3 +160,112 @@ Room World::getRoom(int room) {
 		return Room();
 	}
 }
+
+int World::getAdjacentRoomNumber(int room, Direction dir) {
+	return world.at(room).adjacentRoom(dir);
+}
+
+std::vector<int> World::getAdjacentRoomNumbers(int room) {
+	std::vector<int> rooms = std::vector<int>();
+	for (Direction d : directionVector()) {
+		int r = getAdjacentRoomNumber(room, d);
+		if (r > -1) rooms.push_back(r);
+	}
+	return rooms;
+}
+
+std::vector<int> World::getAdjacentDiagonalRoomNumbers(int room) {
+	std::vector<int> rooms = std::vector<int>();
+	int northRoom = world.at(room).adjacentRoom(Direction::NORTH);
+	int southRoom = world.at(room).adjacentRoom(Direction::SOUTH);
+	if (northRoom > -1) {
+		int northEastRoom = world.at(northRoom).adjacentRoom(Direction::EAST);
+		int northWestRoom = world.at(northRoom).adjacentRoom(Direction::WEST);
+		if (northEastRoom > -1) {
+			rooms.push_back(northEastRoom);
+		}
+		if (northWestRoom > -1) {
+			rooms.push_back(northWestRoom);
+		}
+	}
+	if (southRoom > -1) {
+		int southEastRoom = world.at(southRoom).adjacentRoom(Direction::EAST);
+		int southWestRoom = world.at(southRoom).adjacentRoom(Direction::WEST);
+		if (southEastRoom > -1) {
+			rooms.push_back(southEastRoom);
+		}
+		if (southWestRoom > -1) {
+			rooms.push_back(southWestRoom);
+		}
+	}
+	return rooms;
+}
+
+std::vector<int> World::getAllAdjacentRoomNumbers(int room) {
+	std::vector<int> adjRooms = getAdjacentRoomNumbers(room);
+	std::vector<int> diagRooms = getAdjacentDiagonalRoomNumbers(room);
+	std::vector<int> allRooms;
+	allRooms.reserve( adjRooms.size() + diagRooms.size() ); // preallocate memory
+	allRooms.insert( allRooms.end(), adjRooms.begin(), adjRooms.end() );
+	allRooms.insert( allRooms.end(), diagRooms.begin(), diagRooms.end() );
+	return allRooms;
+}
+
+bool World::roomHasContent(int room, RoomContent rc) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return getRoom(room).hasContent(rc);
+}
+
+bool World::roomBlockaded(int room) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return getRoom(room).roomBlockaded();
+}
+
+bool World::roomIsEmpty(int room) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return getRoom(room).roomEmpty();
+}
+
+void World::addRoomContent(int room, RoomContent rc) {
+	if (room < 0 || room > getNumRooms()) return;
+	world.at(room).addRoomContent(rc);
+}
+
+bool World::removeRoomContent(int room, RoomContent rc) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return world.at(room).removeRoomContent(rc);
+}
+
+std::vector<Inference> World::getInferences(int room) {
+	if (room < 0 || room > getNumRooms()) return std::vector<Inference>();
+	return world.at(room).getInferences();
+}
+
+void World::addInference(int room, Inference i) {
+	if (room < 0 || room > getNumRooms()) return;
+		world.at(room).addInference(i);
+}
+
+void World::removeInference(int room, Inference i) {
+	if (room < 0 || room > getNumRooms()) return;
+	world.at(room).removeInference(i);
+}
+
+bool World::hasInference(int room, Inference i) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return world.at(room).hasInference(i);
+}
+
+bool World::safeUnvisitedRoom(int room) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return world.at(room).safeUnvisitedRoom();
+}
+
+bool World::safeRoom(int room) {
+	if (room < 0 || room > getNumRooms()) return false;
+	return world.at(room).safeRoom();
+}
+
+bool World::roomVisited(int room) {
+	return world.at(room).roomVisited();
+}

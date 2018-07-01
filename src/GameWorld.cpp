@@ -97,8 +97,8 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 	if (room < 0 || room > (int)world.size() || roomHasContent(room, RoomContent::BLOCKADE)) {
 		return; // Ignore attempts to place content outside of boundaries or in blockades
 	}
-	std::vector<int> adjRooms = adjacentRooms(room);
-	std::vector<int> allRooms = allAdjacentRooms(room);
+	std::vector<int> adjRooms = getAdjacentRoomNumbers(room);
+	std::vector<int> allRooms = getAllAdjacentRoomNumbers(room);
 
 	switch(rc) {
 	case RoomContent::GOLD:
@@ -159,14 +159,14 @@ void GameWorld::addToRoom(int room, RoomContent rc) {
 
 void GameWorld::removeRoomContentAndDependents(int room, RoomContent rc, RoomContent dep) {
 	std::vector<int> adjRooms;
-	if (dep == RoomContent::MOO) adjRooms = allAdjacentRooms(room);
-	else adjRooms = adjacentRooms(room);
+	if (dep == RoomContent::MOO) adjRooms = getAllAdjacentRoomNumbers(room);
+	else adjRooms = getAdjacentRoomNumbers(room);
 	// If rc exists in this room, remove it and any adjacency only associated with it.
 	if (roomHasContent(room, rc)) {
 		removeRoomContent(room, rc);
 		for (auto r : adjRooms) {
 			bool keepDep = false;
-			for (auto ar : adjacentRooms(r)) {
+			for (auto ar : getAdjacentRoomNumbers(r)) {
 				if (roomHasContent(ar, dep)) {
 					keepDep = true;
 					break;
@@ -178,93 +178,15 @@ void GameWorld::removeRoomContentAndDependents(int room, RoomContent rc, RoomCon
 }
 
 void GameWorld::addToAdjacentRooms(int room, RoomContent rc) {
-	std::vector<int> rooms = adjacentRooms(room);
+	std::vector<int> rooms = getAdjacentRoomNumbers(room);
 	for (int r : rooms) {
 		addToRoom(r, rc);
 	}
 }
 
 void GameWorld::addToAdjacentDiagonalRooms(int room, RoomContent rc) {
-	std::vector<int> rooms = adjacentDiagonalRooms(room);
+	std::vector<int> rooms = getAdjacentDiagonalRoomNumbers(room);
 	for (int r : rooms) {
 		addToRoom(r, rc);
 	}
-}
-
-int GameWorld::getAdjacentRoomNumber(int room, Direction dir) {
-	return world.at(room).adjacentRoom(dir);
-}
-
-std::vector<int> GameWorld::adjacentRooms(int room) {
-	std::vector<int> rooms = std::vector<int>();
-	int northRoom = world.at(room).adjacentRoom(Direction::NORTH);
-	int eastRoom = 	world.at(room).adjacentRoom(Direction::EAST);
-	int southRoom = world.at(room).adjacentRoom(Direction::SOUTH);
-	int westRoom = world.at(room).adjacentRoom(Direction::WEST);
-	if (northRoom > -1){
-		rooms.push_back(northRoom);
-	}
-	if (eastRoom > -1){
-		rooms.push_back(eastRoom);
-	}
-	if (southRoom > -1){
-		rooms.push_back(southRoom);
-	}
-	if (westRoom > -1){
-		rooms.push_back(westRoom);
-	}
-	return rooms;
-}
-
-std::vector<int> GameWorld::adjacentDiagonalRooms(int room) {
-	std::vector<int> rooms = std::vector<int>();
-	int northRoom = world.at(room).adjacentRoom(Direction::NORTH);
-	int southRoom = world.at(room).adjacentRoom(Direction::SOUTH);
-	if (northRoom > -1) {
-		int northEastRoom = world.at(northRoom).adjacentRoom(Direction::EAST);
-		int northWestRoom = world.at(northRoom).adjacentRoom(Direction::WEST);
-		if (northEastRoom > -1) {
-			rooms.push_back(northEastRoom);
-		}
-		if (northWestRoom > -1) {
-			rooms.push_back(northWestRoom);
-		}
-	}
-	if (southRoom > -1) {
-		int southEastRoom = world.at(southRoom).adjacentRoom(Direction::EAST);
-		int southWestRoom = world.at(southRoom).adjacentRoom(Direction::WEST);
-		if (southEastRoom > -1) {
-			rooms.push_back(southEastRoom);
-		}
-		if (southWestRoom > -1) {
-			rooms.push_back(southWestRoom);
-		}
-	}
-	return rooms;
-}
-
-std::vector<int> GameWorld::allAdjacentRooms(int room) {
-	std::vector<int> adjRooms = adjacentRooms(room);
-	std::vector<int> diagRooms = adjacentDiagonalRooms(room);
-	std::vector<int> allRooms;
-	allRooms.reserve( adjRooms.size() + diagRooms.size() ); // preallocate memory
-	allRooms.insert( allRooms.end(), adjRooms.begin(), adjRooms.end() );
-	allRooms.insert( allRooms.end(), diagRooms.begin(), diagRooms.end() );
-	return allRooms;
-}
-
-bool GameWorld::roomHasContent(int room, RoomContent rc) {
-	return getRoom(room).hasContent(rc);
-}
-
-bool GameWorld::roomBlockaded(int room) {
-	return getRoom(room).roomBlockaded();
-}
-
-void GameWorld::addRoomContent(int room, RoomContent rc) {
-	world.at(room).addRoomContent(rc);
-}
-
-bool GameWorld::removeRoomContent(int room, RoomContent rc) {
-	return world.at(room).removeRoomContent(rc);
 }

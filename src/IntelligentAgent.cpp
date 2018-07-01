@@ -97,7 +97,7 @@ void IntelligentAgent::inferRooms() {
 	// ******* Identify Possible Content ******* //
 	///////////////////////////////////////////////
 
-	std::vector<int> adjRooms = world.adjacentRooms(room);
+	std::vector<int> adjRooms = world.getAdjacentRoomNumbers(room);
 	if (not info.goldFound and world.roomHasContent(room, RoomContent::GLITTER)) {
 		moves.push(Move::GRAB);
 		// Process moves immediately so we can begin finding a path home
@@ -123,7 +123,7 @@ void IntelligentAgent::inferRooms() {
 		markRoom(r, Inference::BLOCKADE);
 	}
 	if (world.roomHasContent(room, RoomContent::MOO)) {
-		std::vector<int> allRooms = world.allAdjacentRooms(room);
+		std::vector<int> allRooms = world.getAllAdjacentRoomNumbers(room);
 		if (std::find(moosFound.begin(), moosFound.end(), room) == moosFound.end()) moosFound.push_back(room);
 //		std::cout << "Testing:: Num moos found = " << moosFound.size() << std::endl;
 		for (int r : allRooms) {
@@ -165,13 +165,13 @@ void IntelligentAgent::inferRooms() {
 	if (world.roomHasContent(room, RoomContent::STENCH) && (int)stenchesFound.size() > 1) {
 		int roomsWithStench;
 		std::vector<int> candidateRooms;
-		std::vector<int> roomsToCheck = world.adjacentRooms(room);
+		std::vector<int> roomsToCheck = world.getAdjacentRoomNumbers(room);
 		// Check rooms adjacent to stench room
 		for (auto roomToCheck : roomsToCheck) {
 			// If room is visited already, it can't contain the Wumpus
 			if (world.roomVisited(roomToCheck)) continue;
 			roomsWithStench = 0;
-			std::vector<int> roomToCheckAdjRooms = world.adjacentRooms(roomToCheck);
+			std::vector<int> roomToCheckAdjRooms = world.getAdjacentRoomNumbers(roomToCheck);
 			for (auto roomToCheckAdjRoom : roomToCheckAdjRooms) {
 				if (world.roomHasContent(roomToCheckAdjRoom, RoomContent::STENCH)) {
 					roomsWithStench++;
@@ -204,13 +204,13 @@ void IntelligentAgent::inferRooms() {
 	if (world.roomHasContent(room, RoomContent::MOO) && (int)moosFound.size() > 1) {
 		int roomsWithMoo;
 		std::vector<int> candidateRooms;
-		std::vector<int> roomsToCheck = world.allAdjacentRooms(room);
+		std::vector<int> roomsToCheck = world.getAllAdjacentRoomNumbers(room);
 		// Check rooms adjacent to moo room
 		for (auto roomToCheck : roomsToCheck) {
 			// If room is visited already, it can't contain the Supmuw
 			if (world.roomVisited(roomToCheck)) continue;
 			roomsWithMoo = 0;
-			std::vector<int> roomToCheckAdjRooms = world.allAdjacentRooms(roomToCheck);
+			std::vector<int> roomToCheckAdjRooms = world.getAllAdjacentRoomNumbers(roomToCheck);
 			for (auto roomToCheckAdjRoom : roomToCheckAdjRooms) {
 				if (world.roomHasContent(roomToCheckAdjRoom, RoomContent::MOO)) {
 					roomsWithMoo++;
@@ -242,7 +242,7 @@ void IntelligentAgent::inferRooms() {
 	}
 	if (supmuwRoomFound() && !wumpusRoomFound() && supmuwEvil) {
 		bool noChanceForNearbyWumpus = true;
-		std::vector<int> roomsToCheck = world.adjacentRooms(supmuwRoom);
+		std::vector<int> roomsToCheck = world.getAdjacentRoomNumbers(supmuwRoom);
 		roomsToCheck.push_back(supmuwRoom);
 		for (auto roomToCheck : roomsToCheck) {
 			if (world.hasInference(roomToCheck, Inference::CONTAINS_WUMPUS)) {
@@ -299,7 +299,7 @@ std::queue<Move> IntelligentAgent::depthLimitedSearch(
 	if (depth == depthLimit) return std::queue<Move>();
 
 	std::vector<std::queue<Move>> paths;
-	std::vector<int> successors = world.adjacentRooms(currRoom);
+	std::vector<int> successors = world.getAdjacentRoomNumbers(currRoom);
 	if (successors.empty()) return std::queue<Move>();
 	for (auto s : successors) {
 		for (auto d : directionVector()) {
@@ -370,7 +370,7 @@ void IntelligentAgent::makeMove() {
 	printWorld();
 	while (!info.gameOver) {
 		numAdjChecked = 0;
-		adjRooms = world.adjacentRooms(room);
+		adjRooms = world.getAdjacentRoomNumbers(room);
 		inferRooms();
 
 		/*

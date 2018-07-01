@@ -30,14 +30,23 @@ public:
 	void setRoomStatus(int room, RoomStatus rs);
 	void printWorld();
 	Room getRoom(int room);
-	virtual int getAdjacentRoomNumber(int room, Direction dir) = 0;
-	virtual std::vector<int> adjacentRooms(int room) = 0;
-	virtual std::vector<int> adjacentDiagonalRooms(int room) = 0; // Primary used for Supmuw's Moo
-	virtual std::vector<int> allAdjacentRooms(int room) = 0;
-	virtual bool roomHasContent(int room, RoomContent rc) = 0;
-	virtual bool roomBlockaded(int room) = 0;
-	virtual void addRoomContent(int room, RoomContent rc) = 0;
-	virtual bool removeRoomContent(int room, RoomContent rc) = 0;
+	int getAdjacentRoomNumber(int room, Direction dir);
+	std::vector<int> getAdjacentRoomNumbers(int room);
+	std::vector<int> getAdjacentDiagonalRoomNumbers(int room); // Primary used for Supmuw's Moo
+	std::vector<int> getAllAdjacentRoomNumbers(int room);
+	bool roomHasContent(int room, RoomContent rc);
+	bool roomBlockaded(int room);
+	bool roomIsEmpty(int room);
+	void addRoomContent(int room, RoomContent rc);
+	bool removeRoomContent(int room, RoomContent rc);
+	std::vector<Inference> getInferences(int room);
+	void addInference(int room, Inference i);
+	void removeInference(int room, Inference i);
+	bool hasInference(int room, Inference i);
+	bool safeUnvisitedRoom(int room);
+	bool safeRoom(int room);
+	bool roomVisited(int room);
+
 };
 
 
