@@ -116,15 +116,7 @@ void World::printBottomRoomRow(int firstRoomInRow) {
 			else if (roomHasContent(j, RoomContent::AGENT_DEAD)) {
 				roomRow += GetRoomContentStringMap(RoomContent::AGENT_DEAD);
 			}
-			if (rs == RoomStatus::VISITED) {
-				roomRow += "*"; // TODO GetRoomStatusStringMap
-			}
-			else if (rs == RoomStatus::FRINGE) {
-				roomRow += "?";
-			}
-			else {
-				roomRow += "";
-			}
+			roomRow += GetRoomStatusStringMap(rs);
 		}
 		roomRow = "|" + stretchRoomRow(roomRow);
 		row += roomRow;

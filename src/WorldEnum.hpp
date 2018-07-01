@@ -74,6 +74,16 @@ enum class Inference { CONTAINS_PIT, CONTAINS_SUPMUW, CONTAINS_SUPMUW_EVIL, CONT
 
 enum class RoomStatus { FRINGE, UNKNOWN, VISITED };
 
+inline std::string GetRoomStatusStringMap(RoomStatus rs) {
+	static const std::map<RoomStatus, std::string> roomStatusToString = {
+			{ RoomStatus::FRINGE, "?" },
+			{ RoomStatus::UNKNOWN, "" },
+			{ RoomStatus::VISITED, "*" }
+	};
+
+	return roomStatusToString.find(rs)->second;
+}
+
 enum class Move { LEFT, RIGHT, FORWARD, SHOOT, GRAB, EXIT };
 inline Move bestDirectionToTurn(Direction currDir, Direction targetDir) {
 	if (currDir == Direction::NORTH) {
