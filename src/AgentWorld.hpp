@@ -35,7 +35,6 @@ public:
 	bool safeRoom(int room);
 	bool roomVisited(int room);
 	Room getRoom(int room);
-	int getNumRooms(); // TODO remove this in favor of World::getNumRooms()
 	bool roomHasContent(int room, RoomContent rc);
 	bool roomBlockaded(int room);
 	bool roomIsEmpty(int room);

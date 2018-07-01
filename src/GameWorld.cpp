@@ -262,10 +262,6 @@ Room GameWorld::getRoom(int room) {
 	}
 }
 
-int GameWorld::getNumRooms() {
-	return world.size();
-}
-
 bool GameWorld::roomHasContent(int room, RoomContent rc) {
 	return getRoom(room).hasContent(rc);
 }

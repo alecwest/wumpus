@@ -97,10 +97,6 @@ Room AgentWorld::getRoom(int room) {
 	}
 }
 
-int AgentWorld::getNumRooms() {
-	return world.size();
-}
-
 bool AgentWorld::roomHasContent(int room, RoomContent rc) {
 	if (room < 0 || room > getNumRooms()) return false;
 	return getRoom(room).hasContent(rc);
