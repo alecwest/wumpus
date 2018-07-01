@@ -1,10 +1,3 @@
-/*
- * WorldEnum.hpp
- *
- *  Created on: Oct 5, 2017
- *      Author: alecw
- */
-
 #ifndef SRC_WORLDENUM_HPP_
 #define SRC_WORLDENUM_HPP_
 
@@ -131,4 +124,51 @@ struct ExplorationStats {
 	int safeRoom = 0;
 };
 
-#endif /* SRC_WORLDENUM_HPP_ */
+struct PerceptionInfo {
+	bool wumpus_attack = false;
+	bool supmuw_attack = false;
+	bool supmuw_exists = false;
+	bool pit_exists = false;
+	bool food_shared = false;
+	bool breeze_felt = false;
+	bool moo_heard = false;
+	bool stench_smelled = false;
+	bool glitter_seen = false;
+	bool bump_felt = false;
+	bool blockade_hit = false;
+};
+
+inline PerceptionInfo setPerceptionInfo(std::vector<RoomContent> rc) {
+	PerceptionInfo pi = PerceptionInfo();
+	for (auto c : rc) {
+		switch (c) {
+		case RoomContent::WUMPUS:
+			pi.wumpus_attack = true; break;
+		case RoomContent::SUPMUW_EVIL:
+			pi.supmuw_attack = true; break;
+		case RoomContent::SUPMUW:
+			pi.supmuw_exists = true; break;
+		case RoomContent::FOOD:
+			pi.food_shared = true; break;
+		case RoomContent::PIT:
+			pi.pit_exists = true; break;
+		case RoomContent::BREEZE:
+			pi.breeze_felt = true; break;
+		case RoomContent::MOO:
+			pi.moo_heard = true; break;
+		case RoomContent::STENCH:
+			pi.stench_smelled = true; break;
+		case RoomContent::GLITTER:
+			pi.glitter_seen = true; break;
+		case RoomContent::BUMP:
+			pi.bump_felt = true; break;
+		case RoomContent::BLOCKADE:
+			pi.blockade_hit = true; break;
+		default:
+			break;
+		}
+	}
+	return pi;
+}
+
+#endif

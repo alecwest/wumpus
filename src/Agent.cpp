@@ -50,54 +50,20 @@ void Agent::printMessage(std::string message) {
 
 // Determine if anything  should happen based on the Room's Contents
 void Agent::processPerception(std::vector<RoomContent> rc) {
-	bool wumpus_attack = false;
-	bool supmuw_attack = false;
-	bool supmuw_exists = false;
-	bool pit_exists = false;
-	bool food_shared = false;
-	bool breeze_felt = false;
-	bool moo_heard = false;
-	bool stench_smelled = false;
-	bool glitter_seen = false;
-	bool bump_felt = false;
-	bool blockade_hit = false;
+	PerceptionInfo perceptionInfo = setPerceptionInfo(rc);
 	std::string message = "";
-	for (auto c : rc) {
-		switch (c) {
-		case RoomContent::WUMPUS:
-			wumpus_attack = true; break;
-		case RoomContent::SUPMUW_EVIL:
-			supmuw_attack = true; break;
-		case RoomContent::SUPMUW:
-			supmuw_exists = true; break;
-		case RoomContent::FOOD:
-			food_shared = true; break;
-		case RoomContent::PIT:
-			pit_exists = true; break;
-		case RoomContent::BREEZE:
-			breeze_felt = true; break;
-		case RoomContent::MOO:
-			moo_heard = true; break;
-		case RoomContent::STENCH:
-			stench_smelled = true; break;
-		case RoomContent::GLITTER:
-			glitter_seen = true; break;
-		case RoomContent::BUMP:
-			bump_felt = true; break;
-		case RoomContent::BLOCKADE:
-			blockade_hit = true; break;
-		default:
-			break;
-		}
-	}
+
 	// If attacked or fell in a PIT not occupied by SUPMUW, agent is dead
-	if (wumpus_attack || supmuw_attack || (pit_exists && !supmuw_exists)) {
+	if (perceptionInfo.wumpus_attack
+			|| perceptionInfo.supmuw_attack
+			|| (perceptionInfo.pit_exists
+					&& !perceptionInfo.supmuw_exists)) {
 		info.alive = false;
 		info.gameOver = true;
 		world.removeRoomContent(room, getAgentRoomContent());
 		world.addRoomContent(room, RoomContent::AGENT_DEAD);
 	}
-	else if (food_shared) {
+	else if (perceptionInfo.food_shared) {
 		info.foodShared = true;
 		world.removeRoomContent(room, RoomContent::FOOD);
 	}
@@ -106,36 +72,36 @@ void Agent::processPerception(std::vector<RoomContent> rc) {
 	if (printFrequency == PrintFrequency::FINAL_RESULT_ONLY) return;
 
 	// Process your move's encounter message
-	if (breeze_felt) {
+	if (perceptionInfo.breeze_felt) {
 		message += "You feel a cold chill. Where is it coming from?\n";
 	}
-	if (moo_heard) {
+	if (perceptionInfo.moo_heard) {
 		message += "You hear the moo of a sad cow.\n";
 	}
-	if (stench_smelled) {
+	if (perceptionInfo.stench_smelled) {
 		message += "Something smells terrible.\n";
 	}
-	if (glitter_seen) {
+	if (perceptionInfo.glitter_seen) {
 		message += "Something is glittering on the floor...\n";
 	}
-	if (bump_felt) {
+	if (perceptionInfo.bump_felt) {
 		message += "You ran into a wall. Don't do that again.\n";
 	}
-	if (blockade_hit) {
+	if (perceptionInfo.blockade_hit) {
 		message += "You ran into a blockade. Who put that there?\n";
 	}
-	if (supmuw_exists) {
+	if (perceptionInfo.supmuw_exists) {
 		message += "You encounter a Supmuw. He seems friendly.\n";
-		message += food_shared ? "He gave you a piece of food! How sweet.\n" : "";
-		message += pit_exists ? "The Supmuw is so big he kept you from falling into the pit!\n" : "";
+		message += perceptionInfo.food_shared ? "He gave you a piece of food! How sweet.\n" : "";
+		message += perceptionInfo.pit_exists ? "The Supmuw is so big he kept you from falling into the pit!\n" : "";
 	}
-	else if (pit_exists) {
-		message += supmuw_attack ? "You step on a Supmuw's head. He doesn't seem too happy about it.\n" : "You tripped and fell into a pit.\n";
+	else if (perceptionInfo.pit_exists) {
+		message += perceptionInfo.supmuw_attack ? "You step on a Supmuw's head. He doesn't seem too happy about it.\n" : "You tripped and fell into a pit.\n";
 	}
-	else if (wumpus_attack) {
+	else if (perceptionInfo.wumpus_attack) {
 		message += "You encountered the Wumpus! He's too quick to be stopped!\n";
 	}
-	else if (supmuw_attack) {
+	else if (perceptionInfo.supmuw_attack) {
 		message += "The Supmuw is evil! You can't escape quick enough!\n";
 	}
 	else if (message.length() == 0){

@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include "NullRoom.hpp"
 #include "Room.hpp"
 #include "WorldEnum.hpp"
 
